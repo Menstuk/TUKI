@@ -1,4 +1,4 @@
-import language_tool_python
+# import language_tool_python
 import queue
 
 class GrammarChecker:
