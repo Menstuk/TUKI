@@ -42,44 +42,47 @@ class EnglishTeacher:
         self.grammar_reply_queue = queue.Queue() # Thread-safe queue for grammar response
         self.terminate_queue = queue.Queue() # Thread-safe queue for terminate threads
         # self.bard_thread = th.Thread(target=self.llm.get_response, args=(self.bard_queue, self.bard_reply_queue, self.terminate_queue,), name='bard_thread')
-        self.grammar_thread = th.Thread(target=self.grammar.grammar_response, args=(self.grammar_queue, self.grammar_reply_queue, self.terminate_queue,), name='grammar_thread')
+        # self.grammar_thread = th.Thread(target=self.grammar.grammar_response, args=(self.grammar_queue, self.grammar_reply_queue, self.terminate_queue,), name='grammar_thread')
         self.logged_in = False
-        self.user_name = None
+        self.user_name = "Sign in or sign up first :)"
 
-    def menu(self):
-        if self.logged_in:
-            while True:
-                self.Menu.print_main_menu_in()
-                choice = input("    Choose mode: ")
+    def menu_navigation(self):
+        while True:
+            if self.logged_in:
+                self.menu.print_main_menu_in()
+                choice = input("Choose mode: ")
                 index = int(choice)
                 if index == 0:
-                    return
-                if index == 1:
+                    break
+                elif index == 1:
                     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Welcome To Learning Mode!")
                     # Start Here the learning mode (grammar correction and rephrased sentences)
-                if index == 2:
+                elif index == 2:
                     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Welcome To Test Mode!")
                     # Start here the test mode
-                if index == 3:
-                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Starting Free Conversation!")
+                elif index == 3:
                     # Start here the free conversation
                     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Welcome To Conversation Mode!")
                     # self.free_conversation()
+                elif index == 4:
+                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Signing Out...")
+                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Bye Bye " + self.user_name)
+                    self.user_name = "Sign in or sign up first :)"
+                    self.logged_in = False
                 else:
-                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Invalid input! Please select one of the options below")
+                        print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Invalid input! Please select one of the options below")
 
-        else:
-            while not self.logged_in:
-                self.Menu.print_main_menu_out()
-                choice = input("    Choose option: ")
+            else:
+                self.menu.print_main_menu_out()
+                choice = input("Choose option: ")
                 index = int(choice)
                 if index == 0:
-                    return
-                if index == 1:
-                    self.user_name = self.signing.sign_up()
+                    break
+                elif index == 1:
+                    self.user_name = self.signing.sign_up(self.db, self.cursor)
                     self.logged_in = True
-                if index == 2:
-                    signed_in, self.user_name = self.signing.sign_in()
+                elif index == 2:
+                    signed_in, self.user_name = self.signing.sign_in(self.db, self.cursor)
                     self.logged_in = signed_in
                 else:
                     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Invalid input! Please select one of the options below")
@@ -191,20 +194,22 @@ class EnglishTeacher:
 
 if __name__ == '__main__':
     # db = DB_connect.connect_db
-    db = mysql.connector.connect(
-    host = 'localhost',
-    user = 'root',
-    passwd = 'password123'
-    )
-    cursor = db.cursor()
-    DB_connect.create_database(cursor)
-    DB_connect.create_users_table(cursor)
+    db = DB_connect()  # Create an instance of DB_connect
+    # db = mysql.connector.connect(
+    # host = 'localhost',
+    # user = 'root',
+    # passwd = 'password123'
+    # )
+    mydb = db.connect_db()
+    cursor = mydb.cursor()
+    db.create_database(cursor)
+    db.create_users_table(cursor)
 
-    teacher = EnglishTeacher(pathlib.Path().absolute(), db, cursor)
-    teacher.menu()
+    teacher = EnglishTeacher(pathlib.Path().absolute(), mydb, cursor)
+    teacher.menu_navigation()
     # teacher.teach()
     print(Fore.RED + Style.BRIGHT + "Hope you learned something new! See you next time!")
     # Close the cursor and the connection
     cursor.close()
-    db.close()
+    mydb.close()
     exit()

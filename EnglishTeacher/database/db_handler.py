@@ -9,12 +9,13 @@ class DB_connect:
         self.db_name = None
 
     def connect_db(self):
-        print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Connecting to Data Base>")
+        # print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Connecting to Data Base>")
         mydb = mysql.connector.connect(
             host = self.host,
             user = self.user,
             passwd = self.password
             )
+        print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Connected Succesfully>")
         return mydb
     
     def create_database(self, cursor):
