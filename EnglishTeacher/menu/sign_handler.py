@@ -46,7 +46,7 @@ class Signing:
                 print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "-------------------------------")
                 print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "1. Try Again")
                 print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "2. Exit")
-                choice = int(input(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Enter your choice:"))
+                choice = int(input(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Enter your choice: "))
                 if choice == 2:
                     break
         if log_in_flag:
