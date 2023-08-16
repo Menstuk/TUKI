@@ -47,8 +47,13 @@ class EnglishTeacher:
         self.user_name = "Sign in or sign up first :)"
 
     def menu_navigation(self):
-        while True:
-            if self.logged_in:
+        '''
+        General main_menu that handles user sign up\in and navigation in the program.
+        After verifying the user, the function will procceed the interaction with him and the mode he desire
+        to practice 
+        '''
+        while True: # Continue untill user choose to exit program
+            if self.logged_in: # Check if user already logged in and behave accordingly
                 self.menu.print_main_menu_in()
                 choice = input("Choose mode: ")
                 index = int(choice)
@@ -72,7 +77,7 @@ class EnglishTeacher:
                 else:
                         print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Invalid input! Please select one of the options below")
 
-            else:
+            else: # If user still not logged in, present him two options, sign up or sign in
                 self.menu.print_main_menu_out()
                 choice = input("Choose option: ")
                 index = int(choice)
@@ -89,8 +94,10 @@ class EnglishTeacher:
 
     
     def free_conversation(self):
-        # Handling the flow of a free conversation between the user and bard. 
-        # Record the conversation in self.conversation for future use. 
+        '''
+        Handling the flow of a free conversation between the user and bard. 
+        Record the conversation in self.conversation for future use. 
+        '''
         self.llm.init_teacher()
         msg = "Hello! Feel free to ask or say anything."
         print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Assistant>")
