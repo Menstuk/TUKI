@@ -4,17 +4,20 @@ import queue
 
 class LanguageModel:
     def __init__(self):
-        self.token = "Ygh8Ku1Ufjys-A7Tu09G9iDKfLuMHoAUJrrQLjaz4YARY38oAVkVsct9k5vLNm5ePrrL9w."
+        self.token = "Zwh8KgwxEwmke1uuJoNv1SwqoQqo8cvZFVxGB8hzN2t7_RIVioZftsMg8ACWoVTLQrrHtw."
         self.session = requests.Session()
         self.session.headers = {
             "Host": "bard.google.com",
             "X-Same-Domain": "1",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.4472.114 Safari/537.36",
             "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
             "Origin": "https://bard.google.com",
             "Referer": "https://bard.google.com/",
         }
+
         self.session.cookies.set("__Secure-1PSID", self.token)
+        self.session.cookies.set("__Secure-1PSIDCC", "APoG2W_E0YuGekX777Mq38TNpU6IZ7ptw7wV5Qg7sBmn_VJ_9ehZ9GF1YyE9adyo5odiJcb-ow")
+        self.session.cookies.set("__Secure-1PSIDTS", "sidts-CjIBSAxbGbH51-HDLiXFRgbM-u-EEB6u9-qUHxBajb9wYGOQPIhiAunHQlmm7J5rtC9INhAA")
         self.model = Bard(token=self.token, session=self.session, timeout=30)
 
     def get_response(self, bard_queue, bard_reply_queue, terminate_queue):
@@ -50,3 +53,6 @@ class LanguageModel:
         # Please follow this instructions for the entire session until it ends. "
 
         resp = self.get_response(starting_prompt)
+
+if __name__ == '__main__':
+    lm = LanguageModel()
