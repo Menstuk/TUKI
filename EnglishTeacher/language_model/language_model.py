@@ -26,10 +26,10 @@ class LanguageModel:
             Punctuation is allowed, and even appreciated.
             """
         self.examples = [(
-            "what u favorite movies.",EXAMPLE_RESPONSE)]
+            "what u favorite movies.", EXAMPLE_RESPONSE)]
         self.palm = None
 
-    def get_response(self, palm_queue, palm_reply_queue, terminate_queue):
+    def get_chat_response(self, palm_queue, palm_reply_queue, terminate_queue):
         while terminate_queue.empty():
             try:
                 if self.palm is None:

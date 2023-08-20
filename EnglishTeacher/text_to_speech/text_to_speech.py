@@ -13,7 +13,7 @@ class TextToSpeech:
         self.language = language
 
     def read_aloud(self, text):
-        text = self.remove_special_characters(text)
+        text = remove_special_characters(text)
         tts = gTTS(text, lang=self.language, slow=self.slow)
         mp3_fp = BytesIO()
         tts.write_to_fp(mp3_fp)
@@ -23,7 +23,8 @@ class TextToSpeech:
         while pygame.mixer.music.get_busy():
             pygame.time.Clock().tick(10)
 
-    def remove_special_characters(self, input_string):
-        pattern = r'[*\-|\\#$)]'  # Characters to remove: *, -, |, \, #, $, )
-        cleaned_string = re.sub(pattern, '', input_string)
-        return cleaned_string
+
+def remove_special_characters(input_string):
+    pattern = r'[*\-|\\#$)]'  # Characters to remove: *, -, |, \, #, $, )
+    cleaned_string = re.sub(pattern, '', input_string)
+    return cleaned_string

@@ -32,8 +32,7 @@ class EnglishTeacher:
         self.palm_reply_queue = queue.Queue() # Thread-safe queue for grammar response
         self.grammar_reply_queue = queue.Queue() # Thread-safe queue for grammar response
         self.terminate_queue = queue.Queue() # Thread-safe queue for terminate threads
-        self.palm_thread = th.Thread(target=self.llm.get_response, args=(self.palm_queue, self.palm_reply_queue, self.terminate_queue,), name='palm_thread')
-
+        self.palm_thread = th.Thread(target=self.llm.get_chat_response, args=(self.palm_queue, self.palm_reply_queue, self.terminate_queue,), name='palm_thread')
 
     def teach(self):
         msg = "Hello! Feel free to ask or say anything."
