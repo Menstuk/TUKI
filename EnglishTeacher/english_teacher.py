@@ -4,6 +4,7 @@ import pathlib
 import shutil
 import queue
 import threading as th
+import mysql.connector
 
 from colorama import Fore, Style
 from faster_whisper import WhisperModel
@@ -14,9 +15,14 @@ from speech_to_text.speech_to_text import SpeechToText
 from text_to_speech.text_to_speech import TextToSpeech
 from typing import Union
 from rec_while_stt import record_while_transcribing
+from menu.menu_prints import Menu
+from menu.sign_handler import Signing
+from database.db_handler import DB_connect
 
 class EnglishTeacher:
-    def __init__(self, path: Union[pathlib.Path, str]):
+    def __init__(self, path: Union[pathlib.Path, str], db, cursor):
+        self.db = db
+        self.cursor = cursor
         self.conversation = []
         if os.path.exists(path / "session"):
             shutil.rmtree(path / "session")
@@ -24,9 +30,11 @@ class EnglishTeacher:
         self.session_directory = pathlib.Path(path / "session")
         self.mic = Recorder(self.session_directory)
         # self.llm = LanguageModel()
-        self.grammar = GrammarChecker()
+        # self.grammar = GrammarChecker()
         self.stt = WhisperModel("medium.en", device="cpu", compute_type="int8")
         self.tts = TextToSpeech()
+        self.menu = Menu()
+        self.signing = Signing()
         self.stop_words = ['Quit.', 'Stop.', 'Exit.', 'Bye.', 'Bye-bye.']
         self.bard_queue = queue.Queue() # Thread-safe queue for bard response
         self.grammar_queue = queue.Queue() # Thread-safe queue for grammar response
@@ -34,8 +42,95 @@ class EnglishTeacher:
         self.grammar_reply_queue = queue.Queue() # Thread-safe queue for grammar response
         self.terminate_queue = queue.Queue() # Thread-safe queue for terminate threads
         # self.bard_thread = th.Thread(target=self.llm.get_response, args=(self.bard_queue, self.bard_reply_queue, self.terminate_queue,), name='bard_thread')
-        self.grammar_thread = th.Thread(target=self.grammar.grammar_response, args=(self.grammar_queue, self.grammar_reply_queue, self.terminate_queue,), name='grammar_thread')
+        # self.grammar_thread = th.Thread(target=self.grammar.grammar_response, args=(self.grammar_queue, self.grammar_reply_queue, self.terminate_queue,), name='grammar_thread')
+        self.logged_in = False
+        self.user_name = "Sign in or sign up first :)"
 
+    def menu_navigation(self):
+        '''
+        General main_menu that handles user sign up\in and navigation in the program.
+        After verifying the user, the function will procceed the interaction with him and the mode he desire
+        to practice 
+        '''
+        while True: # Continue untill user choose to exit program
+            if self.logged_in: # Check if user already logged in and behave accordingly
+                self.menu.print_main_menu_in()
+                choice = input("Choose mode: ")
+                index = int(choice)
+                if index == 0:
+                    break
+                elif index == 1:
+                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Welcome To Learning Mode!")
+                    # Start Here the learning mode (grammar correction and rephrased sentences)
+                elif index == 2:
+                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Welcome To Test Mode!")
+                    # Start here the test mode
+                elif index == 3:
+                    # Start here the free conversation
+                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Welcome To Conversation Mode!")
+                    # self.free_conversation()
+                elif index == 4:
+                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Signing Out...")
+                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Bye Bye " + self.user_name)
+                    self.user_name = "Sign in or sign up first :)"
+                    self.logged_in = False
+                else:
+                        print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Invalid input! Please select one of the options below")
+
+            else: # If user still not logged in, present him two options, sign up or sign in
+                self.menu.print_main_menu_out()
+                choice = input("Choose option: ")
+                index = int(choice)
+                if index == 0:
+                    break
+                elif index == 1:
+                    self.user_name = self.signing.sign_up(self.db, self.cursor)
+                    self.logged_in = True
+                elif index == 2:
+                    signed_in, self.user_name = self.signing.sign_in(self.db, self.cursor)
+                    self.logged_in = signed_in
+                else:
+                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Invalid input! Please select one of the options below")
+
+    
+    def free_conversation(self):
+        '''
+        Handling the flow of a free conversation between the user and bard. 
+        Record the conversation in self.conversation for future use. 
+        '''
+        self.llm.init_teacher()
+        msg = "Hello! Feel free to ask or say anything."
+        print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Assistant>")
+        print(Fore.LIGHTBLUE_EX + Style.NORMAL + msg)
+        self.tts.read_aloud(text=msg)
+        while True:
+            try:
+                # audio = self.mic.record()
+                # prompt = self.stt.get_transcription(audio=audio).lstrip()
+                prompt = record_while_transcribing(audio_model=self.stt)
+                # print(Fore.CYAN + Style.BRIGHT + "<User>")
+                # print(Fore.CYAN + Style.NORMAL + prompt)
+                self.conversation.append({"type": "user", "content": prompt})
+
+                if prompt in self.stop_words:
+                    break
+                if prompt == '':
+                    msg = "No audio detected! Ending Conversation, Bye-bye!"
+                    print(Fore.RED + Style.BRIGHT + msg)
+                    self.tts.read_aloud(text=msg)
+                    break
+                response = self.llm.get_response_simple(prompt= prompt)
+                self.conversation.append({"type": "assistant", "content": response})
+                print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Assistant>")
+                print(Fore.LIGHTBLUE_EX + Style.NORMAL + response)
+                self.tts.read_aloud(text=response)
+
+            except WaitTimeoutError:
+                msg = "No audio detected! Ending Conversation, Bye-bye!"
+                print(Fore.RED + Style.BRIGHT + msg)
+                self.tts.read_aloud(text=msg)
+                break
+        
 
     def teach(self):
         # self.llm.init_teacher()
@@ -105,6 +200,23 @@ class EnglishTeacher:
 
 
 if __name__ == '__main__':
-    teacher = EnglishTeacher(pathlib.Path().absolute())
-    teacher.teach()
+    # db = DB_connect.connect_db
+    db = DB_connect()  # Create an instance of DB_connect
+    # db = mysql.connector.connect(
+    # host = 'localhost',
+    # user = 'root',
+    # passwd = 'password123'
+    # )
+    mydb = db.connect_db()
+    cursor = mydb.cursor()
+    db.create_database(cursor)
+    db.create_users_table(cursor)
+
+    teacher = EnglishTeacher(pathlib.Path().absolute(), mydb, cursor)
+    teacher.menu_navigation()
+    # teacher.teach()
+    print(Fore.RED + Style.BRIGHT + "Hope you learned something new! See you next time!")
+    # Close the cursor and the connection
+    cursor.close()
+    mydb.close()
     exit()

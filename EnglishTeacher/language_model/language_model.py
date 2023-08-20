@@ -6,6 +6,7 @@ class LanguageModel:
     def __init__(self):
         self.token = "Ygh8Ku1Ufjys-A7Tu09G9iDKfLuMHoAUJrrQLjaz4YARY38oAVkVsct9k5vLNm5ePrrL9w."
         self.session = requests.Session()
+        self.session2 = requests.Session()
         self.session.headers = {
             "Host": "bard.google.com",
             "X-Same-Domain": "1",
@@ -16,8 +17,10 @@ class LanguageModel:
         }
         self.session.cookies.set("__Secure-1PSID", self.token)
         self.model = Bard(token=self.token, session=self.session, timeout=30)
+        self.model_conversation = Bard(token=self.token, session=self.session, timeout=30)
 
     def get_response(self, bard_queue, bard_reply_queue, terminate_queue):
+        # Get response using queues for threads
         while terminate_queue.empty():
             try:
                 prompt = bard_queue.get(block=True, timeout=1)
@@ -27,6 +30,7 @@ class LanguageModel:
                 pass
 
     def get_rephrase_response(self, bard_queue, bard_reply_queue, terminate_queue):
+        # Get rephrased response using queues for threads
         while terminate_queue.empty():
             try:
                 prompt = "I will provide you a sentence in this prompt, your task is to rephrase it \
@@ -41,12 +45,13 @@ class LanguageModel:
                 pass
 
     def init_teacher(self):
-        starting_prompt = "In the next prompts you will have a casual conversation. You will answer in a short manner, " \
-                          "no more than one sentences per answer. Please follow this instructions for the entire session until it ends."
-        # starting_prompt = "In the next prompts you will have a conversation with a student to practice \
-        # his speaking abilities. Adjust your answers to his English level based on his prompts. Make sure \
-        # your answers are short and  make it feel more like a phone call conversation. I need you to answer \
-        # in a short manner. No more than two sentences per answer. \
-        # Please follow this instructions for the entire session until it ends. "
-
+        # Starting prompt to give bard general instructions for the upcoming session 
+        starting_prompt = "In the next prompts you will have a casual conversation.\
+            You will answer in a short manner, no more than one sentences per answer. \
+            Please follow this instructions for the entire session until it ends."
         resp = self.get_response(starting_prompt)
+    
+    def get_response_simple(self, prompt):
+        # Get response with prompt only
+        return self.model.get_answer(prompt)["content"]
+
