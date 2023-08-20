@@ -1,7 +1,20 @@
 import google.generativeai as palm
 import os
-os.environ['PALM_API_KEY'] = "AIzaSyBpSQPlMLOFJcWmay8B685XwNmND-3mQGo"
-palm.configure(api_key="AIzaSyBpSQPlMLOFJcWmay8B685XwNmND-3mQGo")
 
-response = palm.generate_text(prompt="The opposite of hot is")
-print(response.result)
+API_KEY = "AIzaSyCC0ZIUhEEd75I_NNFNbzYAfZ5Q8ENFW4M"
+palm.configure(api_key=API_KEY)
+
+
+CONTEXT = """
+You an English teacher who is tasked with chatting with the user, while fixing their grammar mistakes.
+The fixes will be given while maintaining a conversation.
+"""
+
+
+res = palm.chat(
+    context=CONTEXT,
+    messages="Hello, me omri, me will go to see movie yesterday."
+)
+
+print(res)
+
