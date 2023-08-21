@@ -6,6 +6,7 @@ from EnglishTeacher.recorder.recorder import Recorder
 from EnglishTeacher.speech_to_text.speech_to_text import SpeechToText
 from EnglishTeacher.language_model.language_model import LanguageModel
 
+
 class FluencyMarker:
     def __init__(self, recorder: Recorder, speech_to_text: SpeechToText):
         self.recorder = recorder
@@ -56,7 +57,7 @@ class FluencyMarker:
         grades = self.llm.compare_answers(qna_pairs=self.qna_pairs, model_answers=model_answers)
         questions_answered = sum([1 for grade in grades if grade == "CORRECT"])
         num_words = len(self.speech.split(sep=' '))
-        self.speech_rate = num_words / self.audio_length
+        self.speech_rate = num_words / self.audio_length # save audio length differently
         self.grade = (questions_answered / len(self.questions)) * 100
         if self.speech_rate <= 1.0:
             self.grade -= 15
@@ -71,7 +72,10 @@ class FluencyMarker:
 
         return model_answers, grades
 
+
 if __name__ == '__main__':
+    import time
+    start = time.time()
     stt = SpeechToText()
     rec = Recorder()
     fm = FluencyMarker(recorder=rec, speech_to_text=stt)
@@ -83,3 +87,5 @@ if __name__ == '__main__':
     print(f"Your grade is {fm.grade}")
     print(f"\nANSWERS: {answers}\n")
     print(f"\nGRADES: {grades}\n")
+    end = time.time()
+    print(f"Time passed {end-start}")

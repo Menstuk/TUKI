@@ -2,7 +2,7 @@ import google.generativeai as palm
 import os
 
 API_KEY = os.getenv("PALM_API_KEY")
-a = palm.configure(api_key=API_KEY)
+palm.configure(api_key=API_KEY)
 
 
 CONTEXT = """
@@ -15,5 +15,6 @@ res = palm.chat(
     context=CONTEXT,
     messages=[{'author': '0', 'content': f"Start."}]
 )
-res.messages[1] = {'author': '1', 'content': "What would you like to talk about today?"}
 
+
+res.messages[1] = {'author': '1', 'content': "What would you like to talk about today?"}
