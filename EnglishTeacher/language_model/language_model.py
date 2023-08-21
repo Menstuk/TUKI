@@ -1,57 +1,153 @@
-import requests
-from bardapi import Bard
-import queue
+import os
+import re
+
+import google.generativeai as palm
+
+from EnglishTeacher.language_model.examples import *
+
+
+def parse_grades_list(input_list):
+    output_list = []
+    for item in input_list:
+        match = re.search(r'\b(CORRECT|INCORRECT)\b', item)
+        if match:
+            output_list.append(match.group())
+        else:
+            output_list.append(item)
+    return output_list
+
+
+def parse_numbered_list(input_string):
+    lines = input_string.strip().split('\n')
+    numbered_list = []
+
+    for line in lines:
+        if re.match(r'^\d+\.', line.strip()):
+            item_text = re.sub(r'^\d+\.', '', line.strip()).strip()
+            numbered_list.append(item_text)
+
+    return numbered_list
+
 
 class LanguageModel:
     def __init__(self):
-        self.token = "Ygh8Ku1Ufjys-A7Tu09G9iDKfLuMHoAUJrrQLjaz4YARY38oAVkVsct9k5vLNm5ePrrL9w."
-        self.session = requests.Session()
-        self.session2 = requests.Session()
-        self.session.headers = {
-            "Host": "bard.google.com",
-            "X-Same-Domain": "1",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36",
-            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-            "Origin": "https://bard.google.com",
-            "Referer": "https://bard.google.com/",
-        }
-        self.session.cookies.set("__Secure-1PSID", self.token)
-        self.model = Bard(token=self.token, session=self.session, timeout=30)
-        self.model_conversation = Bard(token=self.token, session=self.session, timeout=30)
+        self.api_key = os.getenv("PALM_API_KEY")
+        palm.configure(api_key=self.api_key)
+        self.chat_context = """You are tasked with chatting with the user in a friendly manner.
+        Do not contain any signs such as |,-,* in your responses.
+        Punctuation is allowed, and even appreciated.
+        """
+        self.chat_examples = [(
+            "What are your favorite movies?", CHAT_EXAMPLE_RESPONSE)]
+        self.palm = None
+        self.answer_context = """You are a student tasked with answering a test about an unseen text.
+        You are given the full text and a set of questions.
+        For each question you reply with with an answer from the information in the text.
+        If the question is impossible to answer with the given information, the answer should be "NONE".
+        """
+        self.answer_examples = [
+            (ANSWER_EXAMPLE_1_USER, ANSWER_EXAMPLE_1_RESPONSE),
+            (ANSWER_EXAMPLE_2_USER, ANSWER_EXAMPLE_2_RESPONSE)
+        ]
+        self.compare_context = """You are a teaching assistant tasked with grading a students answers.
+You are given the correct questions and answers, as well as the student's answers and you need to grade the students' answers as either CORRECT or INCORRECT.
+The answers might not be worded exactly the same, but if the general idea of the answer is the same, the answer should be graded as CORRECT.
+If the given student answer is "NONE" then the grade should be INCORRECT.
+Your response should be a list of grades, no need for explanations."""
+        self.compare_examples = [
+            (COMPARE_EXAMPLE_1_USER, COMPARE_EXAMPLE_1_RESPONSE),
+            (COMPARE_EXAMPLE_2_USER, COMPARE_EXAMPLE_2_RESPONSE),
+            (COMPARE_EXAMPLE_3_USER, COMPARE_EXAMPLE_3_RESPONSE)
+        ]
 
-    def get_response(self, bard_queue, bard_reply_queue, terminate_queue):
-        # Get response using queues for threads
-        while terminate_queue.empty():
+    def get_chat_response(self, prompt: str):
+        if self.palm is None:
+            res = palm.chat(
+                context=self.chat_context,
+                messages=[{'author': '0', 'content': f"Start."}],
+                examples=self.chat_examples
+            )
+            res.messages[1] = {'author': '1', 'content': "Hello! Feel free to ask or say anything."}
+            self.palm = res
+        self.palm = self.palm.reply(prompt)
+        answer = self.palm.last
+        return answer
+
+    def answer_questions(self, text, questions):
+        prompt = "Answer the following-\n\n"
+        prompt += f"Text:\n{text}\n\n"
+        prompt += "Questions:\n"
+        for i, q in enumerate(questions):
+            prompt += f"{i+1}. {q}\n"
+
+        for i in range(5):
+            res = palm.chat(
+                context=self.answer_context,
+                examples=self.answer_examples,
+                messages=prompt
+            )
             try:
-                prompt = bard_queue.get(block=True, timeout=1)
-                answer = self.model.get_answer(prompt)["content"]
-                bard_reply_queue.put(answer)
-            except queue.Empty:
-                pass
+                response = parse_numbered_list(res.last)
+                return response
+            except:
+                print(f"Parsing response failed. Try {i+1}/5")
+                continue
 
-    def get_rephrase_response(self, bard_queue, bard_reply_queue, terminate_queue):
-        # Get rephrased response using queues for threads
-        while terminate_queue.empty():
+    def compare_answers(self, qna_pairs, model_answers):
+        prompt = "Correct questions and answers:\n"
+        for i, pair in enumerate(qna_pairs):
+            prompt += f"{i+1}. Q: {pair['question']}\n A: {pair['answer']}\n"
+
+        prompt += "\nStudent answers:\n"
+        for i, answer in enumerate(model_answers):
+            prompt += f"{i+1}. {answer}\n"
+
+        for i in range(5):
+            res = palm.chat(
+                context=self.compare_context,
+                examples=self.compare_examples,
+                messages=prompt
+            )
             try:
-                prompt = "I will provide you a sentence in this prompt, your task is to rephrase it \
-                    in two ways with only one option for each way: causal and formal. The format is: \
-                    Casual: (insert here the casual rephrase text) Formal: (insert here the formal rephrase text). \
-                    Please don't add any additional text to your answer, only one casual and one formal \
-                    alternatives. The sentence you need to rephrase is: "
-                prompt += bard_queue.get(block=True, timeout=1)
-                answer = self.model.get_answer(prompt)["content"]
-                bard_reply_queue.put(answer)
-            except queue.Empty:
-                pass
+                response = parse_numbered_list(res.last)
+                response = parse_grades_list(response)
+                return response
+            except:
+                print(f"Parsing response failed. Try {i + 1}/5")
+                continue
 
-    def init_teacher(self):
-        # Starting prompt to give bard general instructions for the upcoming session 
-        starting_prompt = "In the next prompts you will have a casual conversation.\
-            You will answer in a short manner, no more than one sentences per answer. \
-            Please follow this instructions for the entire session until it ends."
-        resp = self.get_response(starting_prompt)
-    
-    def get_response_simple(self, prompt):
-        # Get response with prompt only
-        return self.model.get_answer(prompt)["content"]
+if __name__ == '__main__':
+    questions = [
+        "What is your age?",
+        "How many siblings do you have?",
+        "What does your father do for a living?",
+        "What does your mother do for a living?",
+        "What was your favorite class in high-school?"
+    ]
+    qna_pairs = [
+        {
+            "question": "What is your age?",
+            "answer": "26"
+        },
+        {
+            "question": "How many siblings do you have?",
+            "answer": "2"
+        },
+        {
+            "question": "What does your father do for a living??",
+            "answer": "teacher"
+        },
+        {
+            "question": "What does your mother do for a living??",
+            "answer": "teacher"
+        },
+        {
+            "question": "What was your favorite class in high-school?",
+            "answer": "biology"
+        },
+    ]
 
+    text = "My name is Omri. I am 20 years old. I have one brother and one sister and both my parents are teachers."
+    llm = LanguageModel()
+    model_answers = llm.answer_questions(text=text, questions=questions)
+    grades = llm.compare_answers(qna_pairs=qna_pairs, model_answers=model_answers)
