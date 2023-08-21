@@ -3,7 +3,7 @@ import re
 
 import google.generativeai as palm
 
-from EnglishTeacher.language_model.examples import *
+from language_model.examples import *
 
 
 def parse_grades_list(input_list):

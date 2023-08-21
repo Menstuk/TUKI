@@ -9,7 +9,7 @@ import mysql.connector
 from colorama import Fore, Style
 from faster_whisper import WhisperModel
 
-from EnglishTeacher.fluency_marker.fluency_marker import FluencyMarker
+from fluency_marker.fluency_marker import FluencyMarker
 from language_model.language_model import LanguageModel
 from recorder.recorder import Recorder, WaitTimeoutError
 from speech_to_text.speech_to_text import SpeechToText
@@ -34,6 +34,7 @@ class EnglishTeacher:
         self.whisper = WhisperModel("medium.en", device="cpu", compute_type="int8")
         self.stt = SpeechToText()
         self.tts = TextToSpeech()
+        self.db_handler = DB_connect()
         self.menu = Menu()
         self.signing = Signing()
         self.stop_words = ['Quit.', 'Stop.', 'Exit.', 'Bye.', 'Bye-bye.']
@@ -93,7 +94,7 @@ class EnglishTeacher:
         fm.evaluate()
         grade = fm.grade
         wps = fm.speech_rate
-        self.db.insert_user_metrics(cursor=self.cursor, username=self.user_name, speech_rate=wps, correct_answers_metric=grade)
+        self.db_handler.insert_user_metrics(cursor=self.cursor, username=self.user_name, speech_rate=wps, correct_answers_metric=grade)
 
     def free_conversation(self):
         """
@@ -129,23 +130,18 @@ class EnglishTeacher:
 
 
 if __name__ == '__main__':
-    # db = DB_connect.connect_db
     db = DB_connect()  # Create an instance of DB_connect
-    # db = mysql.connector.connect(
-    # host = 'localhost',
-    # user = 'root',
-    # passwd = 'password123'
-    # )
     mydb = db.connect_db()
     cursor = mydb.cursor()
     db.create_database(cursor)
     db.create_users_table(cursor)
 
     teacher = EnglishTeacher(pathlib.Path().absolute(), mydb, cursor)
+
     teacher.menu_navigation()
-    # teacher.teach()
+
     print(Fore.RED + Style.BRIGHT + "Hope you learned something new! See you next time!")
-    # Close the cursor and the connection
+
     cursor.close()
     mydb.close()
     exit()

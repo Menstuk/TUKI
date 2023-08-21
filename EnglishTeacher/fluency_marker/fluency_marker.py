@@ -2,9 +2,9 @@ import time
 
 from pydub import AudioSegment
 
-from EnglishTeacher.recorder.recorder import Recorder
-from EnglishTeacher.speech_to_text.speech_to_text import SpeechToText
-from EnglishTeacher.language_model.language_model import LanguageModel
+from recorder.recorder import Recorder
+from speech_to_text.speech_to_text import SpeechToText
+from language_model.language_model import LanguageModel
 
 
 class FluencyMarker:
