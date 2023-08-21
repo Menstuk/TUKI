@@ -1,4 +1,4 @@
-CHAT_EXAMPLE_RESPONSE = """Of course! My favorite movies are:
+CHAT_EXAMPLE_RESPONSE = """My favorite movies are:
 
 The Dark Knight
 The Shawshank Redemption
@@ -7,7 +7,7 @@ Pulp Fiction
 Forrest Gump
 And many more!
 
-Notice that the correct phrasing should be "What are your favorite movies?".
+Movies are a great visual medium in my opinion. What are your favorite movies?
 """
 
 ANSWER_EXAMPLE_1_USER = """Answer the following-

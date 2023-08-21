@@ -70,8 +70,6 @@ class FluencyMarker:
         elif self.speech_rate > 2.5:
             self.grade += 5
 
-        return model_answers, grades
-
 
 if __name__ == '__main__':
     import time
@@ -81,11 +79,9 @@ if __name__ == '__main__':
     fm = FluencyMarker(recorder=rec, speech_to_text=stt)
     fm.ask_questions()
     fm.get_speech()
-    answers, grades = fm.evaluate()
+    fm.evaluate()
     print(f"\n{fm.speech}\n")
     print(f"You speak at a rate of {fm.speech_rate} words per second")
     print(f"Your grade is {fm.grade}")
-    print(f"\nANSWERS: {answers}\n")
-    print(f"\nGRADES: {grades}\n")
     end = time.time()
     print(f"Time passed {end-start}")
