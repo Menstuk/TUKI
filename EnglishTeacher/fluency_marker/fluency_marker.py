@@ -28,6 +28,7 @@ class FluencyMarker:
         self.qna_pairs = None
         self.grade = None
         self.speech_rate = None
+        self.grammar_score = None
         self.speech = None
         self.audio_length = None
         self.llm = LanguageModel()
@@ -51,6 +52,7 @@ class FluencyMarker:
         audio = AudioSegment.from_file(path)
         self.audio_length = audio.duration_seconds
         self.speech = self.stt.get_transcription(audio=path.as_posix()).lstrip()
+        print(self.speech)
 
     def evaluate(self):
         model_answers = self.llm.answer_questions(text=self.speech, questions=self.questions)
@@ -59,6 +61,7 @@ class FluencyMarker:
         num_words = len(self.speech.split(sep=' '))
         self.speech_rate = num_words / self.audio_length # save audio length differently
         self.grade = (questions_answered / len(self.questions)) * 100
+        text_answer, self.grammar_score = self.llm.grade_grammar(prompt=self.speech)
         if self.speech_rate <= 1.0:
             self.grade -= 15
         elif 1 < self.speech_rate <= 1.5:
@@ -82,6 +85,7 @@ if __name__ == '__main__':
     fm.evaluate()
     print(f"\n{fm.speech}\n")
     print(f"You speak at a rate of {fm.speech_rate} words per second")
-    print(f"Your grade is {fm.grade}")
+    print(f"Your questions grade is {fm.grade}")
+    print(f"Your grammar score is {fm.grammar_score}")
     end = time.time()
     print(f"Time passed {end-start}")

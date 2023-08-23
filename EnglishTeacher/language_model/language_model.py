@@ -28,6 +28,16 @@ def parse_numbered_list(input_string):
 
     return numbered_list
 
+def extract_grade(input_string):
+    # Find the first numeric substring in the string under the assumption that there will be no more than one
+    # number in LLM response
+    match = re.search(r'\d+', input_string)
+    if match:
+        number = int(match.group())
+        return number
+    else:
+        return False
+
 
 class LanguageModel:
     def __init__(self):
@@ -40,6 +50,7 @@ class LanguageModel:
         self.chat_examples = [(
             "What are your favorite movies?", CHAT_EXAMPLE_RESPONSE)]
         self.palm = None
+        self.grammar_palm = None
         self.answer_context = """You are a student tasked with answering a test about an unseen text.
         You are given the full text and a set of questions.
         For each question you reply with with an answer from the information in the text.
@@ -59,6 +70,23 @@ Your response should be a list of grades, no need for explanations."""
             (COMPARE_EXAMPLE_2_USER, COMPARE_EXAMPLE_2_RESPONSE),
             (COMPARE_EXAMPLE_3_USER, COMPARE_EXAMPLE_3_RESPONSE)
         ]
+        self.grammar_context = """
+You are now a language evaluator with a specific focus on grading grammar and verb conjugation mistakes in text.\
+Your main task is to assess the provided paragraphs and assign them a grade from 1 to 5 based on their grammar \
+and verb conjugation accuracy. You should consider both the correctness of grammar and the appropriate usage \
+of verb conjugations in your evaluation. Grading Scale: \
+1: The text has severe grammar and verb conjugation mistakes that significantly impair its clarity and coherence. \
+2: The text contains noticeable grammar and verb conjugation errors that affect its readability and understanding. \
+3: The text has some grammar and verb conjugation issues, but they don't heavily detract from the overall meaning. \
+4: The text contains only minor grammar and verb conjugation errors that have a minimal impact on its quality. \
+5: The text demonstrates impeccable grammar and verb conjugation usage, with no or only very minor errors. \
+Make sure your answer is only the number of the grade: 1, 2, 3, 4 or 5."""
+        self.grammar_examples = [(GRAMMAR_EXAMPLE_1_USER_GOOD_YOUNG, GRAMMAR_EXAMPLE_1_RESPONSE_GOOD_YOUNG),
+                                 (GRAMMAR_EXAMPLE_2_USER_GOOD_ADULT, GRAMMAR_EXAMPLE_2_RESPONSE_GOOD_ADULT),
+                                 (GRAMMAR_EXAMPLE_3_USER_MEDIUM_YOUNG, GRAMMAR_EXAMPLE_3_RESPONSE_MEDIUM_YOUNG),
+                                 (GRAMMAR_EXAMPLE_4_USER_MEDIUM_ADULT, GRAMMAR_EXAMPLE_4_RESPONSE_MEDIUM_ADULT),
+                                 (GRAMMAR_EXAMPLE_5_USER_BAD_YOUNG, GRAMMAR_EXAMPLE_5_RESPONSE_BAD_YOUNG),
+                                 (GRAMMAR_EXAMPLE_6_USER_BAD_ADULT, GRAMMAR_EXAMPLE_6_RESPONSE_BAD_ADULT)]
 
     def get_chat_response(self, prompt: str):
         if self.palm is None:
@@ -115,6 +143,24 @@ Your response should be a list of grades, no need for explanations."""
             except:
                 print(f"Parsing response failed. Try {i + 1}/5")
                 continue
+
+    def grade_grammar(self, prompt: str):
+        for i in range(5):
+            if self.grammar_palm is None:
+                res = palm.chat(
+                    context=self.grammar_context,
+                    examples=self.grammar_examples,
+                    messages=prompt
+                )
+                self.grammar_palm = res
+            answer = self.grammar_palm.last
+            print(answer)
+            grammar_grade = extract_grade(answer)
+            if grammar_grade:
+                return answer, grammar_grade
+            else:
+                print("Failed to extract a grade from LLM answer")
+
 
 if __name__ == '__main__':
     questions = [
