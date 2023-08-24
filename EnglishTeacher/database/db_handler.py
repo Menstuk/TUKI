@@ -53,6 +53,7 @@ class DB_connect:
             CREATE TABLE IF NOT EXISTS user_metrics (
                 username VARCHAR(256),
                 speech_rate FLOAT,
+                speech_rate_score FLOAT,
                 questions_score FLOAT,
                 grammar_score FLOAT,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -73,7 +74,7 @@ class DB_connect:
         self.create_users_table(cursor)
         self.create_user_metrics_table(cursor)
 
-    def insert_user_metrics(self, cursor, username, speech_rate, questions_score, grammar_score):
+    def insert_user_metrics(self, cursor, username, speech_rate, speech_rate_score, questions_score, grammar_score):
         '''
         Insert new record of user test with the 2 metrics: speech_rate, questions_score 
         Will be called after the user will finish a test and the metrics will be calculated 
@@ -81,8 +82,8 @@ class DB_connect:
         print(f"You speak at a rate of {speech_rate} words per second")
         print(f"Your questions grade is {questions_score}")
         print(f"Your grammar score is {grammar_score}")
-        insert_query = "INSERT INTO user_metrics (username, speech_rate, questions_score, grammar_score) \
-            VALUES (%s, %s, %s, %s)"
-        cursor.execute(insert_query, (username, speech_rate, questions_score, grammar_score))
+        insert_query = "INSERT INTO user_metrics (username, speech_rate, speech_rate_score, questions_score, grammar_score) \
+            VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(insert_query, (username, speech_rate, speech_rate_score, questions_score, grammar_score))
         self.db.commit()
         print("User metrics inserted successfully!")

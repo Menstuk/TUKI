@@ -41,6 +41,15 @@ class EnglishTeacher:
         self.logged_in = False
         self.user_name = "Sign in or sign up first :)"
 
+    def valid_choice(self, choice):
+        """
+        Validate that the input consist of one number (int) alone for navigating in menu"""
+        try:
+            number = int(choice) 
+            return True
+        except ValueError:
+            return False
+
     def menu_navigation(self):
         """
         General main_menu that handles user sign up/in and navigation in the program.
@@ -50,7 +59,12 @@ class EnglishTeacher:
         while True:  # Continue until user chooses to exit program
             if self.logged_in:  # Check if user already logged in and behave accordingly
                 self.menu.print_main_menu_in()
-                choice = input("Choose mode: ")
+                while True:
+                    choice = input("Choose mode: ")
+                    if self.valid_choice(choice):
+                        break
+                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Please enter your choice again.")
+                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Make sure your choice consist of numbers alone")
                 index = int(choice)
                 if index == 0:
                     break
@@ -75,7 +89,12 @@ class EnglishTeacher:
 
             else:  # If user still not logged in, present him two options, sign up or sign in
                 self.menu.print_main_menu_out()
-                choice = input("Choose option: ")
+                while True:
+                    choice = input("Choose mode: ")
+                    if self.valid_choice(choice):
+                        break
+                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Please enter your choice again.")
+                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Make sure your choice consist of numbers alone")
                 index = int(choice)
                 if index == 0:
                     break
@@ -96,9 +115,10 @@ class EnglishTeacher:
         fm.evaluate()
         grade = fm.grade
         wps = fm.speech_rate
+        speech_rate_score = fm.speech_grade
         grammar_score = fm.grammar_score
-        self.db_handler.insert_user_metrics(cursor=self.cursor, username=self.user_name,\
-                                speech_rate=wps, questions_score=grade, grammar_score = grammar_score)
+        self.db_handler.insert_user_metrics(cursor=self.cursor, username=self.user_name,speech_rate=wps, \
+            speech_rate_score= speech_rate_score, questions_score=grade, grammar_score = grammar_score, )
 
     def free_conversation(self):
         """

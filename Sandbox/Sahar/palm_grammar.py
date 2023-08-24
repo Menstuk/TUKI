@@ -75,9 +75,22 @@ def grade_grammar(prompt: str):
             res = palm.chat(
                 context=CONTEXT,
                 examples=grammar_examples,
-                messages=prompt
+                messages="You are now a language evaluator with a specific focus on grading grammar and \
+verb conjugation mistakes in text. Your main task is to assess the provided paragraphs and assign them a \
+grade from 1 to 5 based on their grammar and verb conjugation accuracy. You should consider both the \
+correctness of grammar and the appropriate usage of verb conjugations in your evaluation. Grading Scale: \
+1: The text has severe grammar and verb conjugation mistakes that significantly impair its clarity and coherence. \
+2: The text contains noticeable grammar and verb conjugation errors that affect its readability and understanding. \
+3: The text has some grammar and verb conjugation issues, but they don't heavily detract from the overall meaning. \
+4: The text contains only minor grammar and verb conjugation errors that have a minimal impact on its quality. \
+5: The text demonstrates impeccable grammar and verb conjugation usage, with no or only very minor errors. \
+Make sure you answer in the following format - The grade is: x. Where x is the grade you choose from 1-5 \
+based on grammar and verb conjugation so x will represent the level of english as desribed by grading scale. \
+We will strat from the next prompt, stick to the guidelines please."
             )
+            res = res.reply(prompt)
             answer = res.last
+            print(answer)
             grammar_grade = extract_number_and_convert_to_int(answer)
             if grammar_grade:
                 return answer, grammar_grade
@@ -109,6 +122,7 @@ prompt = 'So, about my age, I\'m currently 28 years old. As for siblings, I\'ve 
 # answer = res.last
 
 answer, grammar_grade = grade_grammar(prompt)
+print("Grammar score:")
 print(grammar_grade)
-print(answer)
+# print(answer)
 

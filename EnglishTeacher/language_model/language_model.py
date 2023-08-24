@@ -80,7 +80,8 @@ of verb conjugations in your evaluation. Grading Scale: \
 3: The text has some grammar and verb conjugation issues, but they don't heavily detract from the overall meaning. \
 4: The text contains only minor grammar and verb conjugation errors that have a minimal impact on its quality. \
 5: The text demonstrates impeccable grammar and verb conjugation usage, with no or only very minor errors. \
-Make sure your answer is only the number of the grade: 1, 2, 3, 4 or 5."""
+Make sure you answer in the following format - The grade is: x. Where x is the grade you choose from 1-5 \
+based on grammar and verb conjugation so x will represent the level of english as desribed by grading scale."""
         self.grammar_examples = [(GRAMMAR_EXAMPLE_1_USER_GOOD_YOUNG, GRAMMAR_EXAMPLE_1_RESPONSE_GOOD_YOUNG),
                                  (GRAMMAR_EXAMPLE_2_USER_GOOD_ADULT, GRAMMAR_EXAMPLE_2_RESPONSE_GOOD_ADULT),
                                  (GRAMMAR_EXAMPLE_3_USER_MEDIUM_YOUNG, GRAMMAR_EXAMPLE_3_RESPONSE_MEDIUM_YOUNG),
@@ -145,22 +146,23 @@ Make sure your answer is only the number of the grade: 1, 2, 3, 4 or 5."""
                 continue
 
     def grade_grammar(self, prompt: str):
+        """
+        Grades """
         for i in range(5):
-            if self.grammar_palm is None:
-                res = palm.chat(
-                    context=self.grammar_context,
-                    examples=self.grammar_examples,
-                    messages=prompt
-                )
-                self.grammar_palm = res
-            answer = self.grammar_palm.last
+            res_grammar = palm.chat(
+                context=self.grammar_context,
+                examples=self.grammar_examples,
+                messages=prompt
+            )
+            answer = res_grammar.last
             print(answer)
             grammar_grade = extract_grade(answer)
             if grammar_grade:
                 return answer, grammar_grade
             else:
                 print("Failed to extract a grade from LLM answer")
-
+                print(f"Attempt number {i+1} out of {5}")
+                
 
 if __name__ == '__main__':
     questions = [
