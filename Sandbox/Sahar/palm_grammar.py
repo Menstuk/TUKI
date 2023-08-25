@@ -71,11 +71,10 @@ grammar_examples = [(GRAMMAR_EXAMPLE_1_USER_GOOD_YOUNG, GRAMMAR_EXAMPLE_1_RESPON
                                  (GRAMMAR_EXAMPLE_6_USER_BAD_ADULT, GRAMMAR_EXAMPLE_6_RESPONSE_BAD_ADULT)]
 
 def grade_grammar(prompt: str):
-        for i in range(5):
-            res = palm.chat(
-                context=CONTEXT,
-                examples=grammar_examples,
-                messages="You are now a language evaluator with a specific focus on grading grammar and \
+        # for i in range(5):
+        res = palm.chat(            
+            examples=grammar_examples,
+            messages="You are now a language evaluator with a specific focus on grading grammar and \
 verb conjugation mistakes in text. Your main task is to assess the provided paragraphs and assign them a \
 grade from 1 to 5 based on their grammar and verb conjugation accuracy. You should consider both the \
 correctness of grammar and the appropriate usage of verb conjugations in your evaluation. Grading Scale: \
@@ -87,15 +86,18 @@ correctness of grammar and the appropriate usage of verb conjugations in your ev
 Make sure you answer in the following format - The grade is: x. Where x is the grade you choose from 1-5 \
 based on grammar and verb conjugation so x will represent the level of english as desribed by grading scale. \
 We will strat from the next prompt, stick to the guidelines please."
-            )
-            res = res.reply(prompt)
-            answer = res.last
-            print(answer)
-            grammar_grade = extract_number_and_convert_to_int(answer)
-            if grammar_grade:
-                return answer, grammar_grade
-            else:
-                print("Failed to extract a grade from LLM answer")
+        )
+        print("Before the prompt")
+        print(res.last)
+        res = res.reply(prompt)
+        answer = res.last
+        print("After the prompt")
+        print(answer)
+        grammar_grade = extract_number_and_convert_to_int(answer)
+        if grammar_grade:
+            return answer, grammar_grade
+        else:
+            print("Failed to extract a grade from LLM answer")
 
 def extract_number_and_convert_to_int(input_string):
     # Find the first numeric substring in the string under the assumption that there will be no more than one
@@ -107,12 +109,14 @@ def extract_number_and_convert_to_int(input_string):
         return number
     else:
         return False
+    
+start_prompt ="Grade this text as I explained before: "
 
-prompt = 'So, about my age, I\'m currently 28 years old. As for siblings, I\'ve got two of them. My father,\
-    he\'s an engineer and works at a tech company. My mother, on the other hand, is a teacher at a local school.\
-    When it comes to high school, I have to say my favorite class was definitely English literature. \
-    I\'ve always enjoyed reading and analyzing different literary works.'
+prompt = 'Technology have transformed the ways we lives and interact with the world around us. The conveniences \
+of smartphones enable us to accesses information and communicate effortful. From streaming movies to connects \
+with friends on social medias, these devices have became integral parts of our daily routines.'
 
+all_prompt = start_prompt + prompt
 # res = palm.chat(
 #     context=CONTEXT,
 #     examples=grammar_examples,
@@ -121,7 +125,7 @@ prompt = 'So, about my age, I\'m currently 28 years old. As for siblings, I\'ve 
 
 # answer = res.last
 
-answer, grammar_grade = grade_grammar(prompt)
+answer, grammar_grade = grade_grammar(all_prompt)
 print("Grammar score:")
 print(grammar_grade)
 # print(answer)
