@@ -76,7 +76,8 @@ class DB_connect:
 
     def insert_user_metrics(self, cursor, username, speech_rate, speech_rate_score, questions_score, grammar_score):
         '''
-        Insert new record of user test with the 2 metrics: speech_rate, questions_score 
+        Insert new record of user test with 4 metrics: speech_rate, speech_rate_score, questions_score
+        and grammar_score.
         Will be called after the user will finish a test and the metrics will be calculated 
         '''
         print(f"You speak at a rate of {speech_rate} words per second")
