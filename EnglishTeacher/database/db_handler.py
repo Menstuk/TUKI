@@ -80,9 +80,9 @@ class DB_connect:
         and grammar_score.
         Will be called after the user will finish a test and the metrics will be calculated 
         '''
-        print(f"You speak at a rate of {speech_rate} words per second")
-        print(f"Your questions grade is {questions_score}")
-        print(f"Your grammar score is {grammar_score}")
+        print(f"You speak at a rate of: {speech_rate} words per second")
+        print(f"Your questions grade is: {questions_score}")
+        print(f"Your grammar score is: {grammar_score}")
         insert_query = "INSERT INTO user_metrics (username, speech_rate, speech_rate_score, questions_score, grammar_score) \
             VALUES (%s, %s, %s, %s, %s)"
         cursor.execute(insert_query, (username, speech_rate, speech_rate_score, questions_score, grammar_score))

@@ -73,25 +73,27 @@ grammar_examples = [(GRAMMAR_EXAMPLE_1_USER_GOOD_YOUNG, GRAMMAR_EXAMPLE_1_RESPON
 def grade_grammar(prompt: str):
         # for i in range(5):
         res = palm.chat(            
-            examples=grammar_examples,
-            messages="You are now a language evaluator with a specific focus on grading grammar and \
+            context="You are now a language evaluator with a specific focus on grading grammar and \
 verb conjugation mistakes in text. Your main task is to assess the provided paragraphs and assign them a \
 grade from 1 to 5 based on their grammar and verb conjugation accuracy. You should consider both the \
-correctness of grammar and the appropriate usage of verb conjugations in your evaluation. Grading Scale: \
-1: The text has severe grammar and verb conjugation mistakes that significantly impair its clarity and coherence. \
-2: The text contains noticeable grammar and verb conjugation errors that affect its readability and understanding. \
-3: The text has some grammar and verb conjugation issues, but they don't heavily detract from the overall meaning. \
-4: The text contains only minor grammar and verb conjugation errors that have a minimal impact on its quality. \
-5: The text demonstrates impeccable grammar and verb conjugation usage, with no or only very minor errors. \
+correctness of grammar and the appropriate usage of verb conjugations in your evaluation. The general \
+instructions for the grade are: \
+1 - The text has severe grammar and verb conjugation mistakes that significantly impair its clarity and coherence. \
+2 - The text contains noticeable grammar and verb conjugation errors that affect its readability and understanding. \
+3 - The text has some grammar and verb conjugation issues, but they don't heavily detract from the overall meaning. \
+4 - The text contains only minor grammar and verb conjugation errors that have a minimal impact on its quality. \
+5 - The text demonstrates impeccable grammar and verb conjugation usage, with no or only very minor errors. \
 Make sure you answer in the following format - The grade is: x. Where x is the grade you choose from 1-5 \
 based on grammar and verb conjugation so x will represent the level of english as desribed by grading scale. \
-We will strat from the next prompt, stick to the guidelines please."
+We will strat from the next prompt, please stick to the guidelines.",
+            examples=grammar_examples,
+            messages=all_prompt
         )
-        print("Before the prompt")
-        print(res.last)
-        res = res.reply(prompt)
+        # print("Before the prompt")
+        # print(res.last)
+        # res = res.reply(prompt)
         answer = res.last
-        print("After the prompt")
+        # print("After the prompt")
         print(answer)
         grammar_grade = extract_number_and_convert_to_int(answer)
         if grammar_grade:
@@ -110,13 +112,16 @@ def extract_number_and_convert_to_int(input_string):
     else:
         return False
     
-start_prompt ="Grade this text as I explained before: "
+start_prompt = "Grade the next text as I explained before in the context. Text: "
 
-prompt = 'Technology have transformed the ways we lives and interact with the world around us. The conveniences \
-of smartphones enable us to accesses information and communicate effortful. From streaming movies to connects \
-with friends on social medias, these devices have became integral parts of our daily routines.'
+prompt = 'Artificial intelligences have opened up new possibilitiess in various industries. Machine \
+learning algorithms analyzes vast amount of data, helping business make informeds decisions. Whether \
+it\'s personalized recommendation or self-driving cars, AI continues reshaping our understandings \
+of what\'s achievables.'
 
 all_prompt = start_prompt + prompt
+print("all prompt")
+print(all_prompt)
 # res = palm.chat(
 #     context=CONTEXT,
 #     examples=grammar_examples,
@@ -126,6 +131,7 @@ all_prompt = start_prompt + prompt
 # answer = res.last
 
 answer, grammar_grade = grade_grammar(all_prompt)
+print("------------------------------")
 print("Grammar score:")
 print(grammar_grade)
 # print(answer)
