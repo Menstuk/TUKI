@@ -6,21 +6,26 @@ class DB_connect:
         self.host = 'localhost'
         self.user = 'root'
         self.password = 'password123'
-        self.db = None
-
-    def connect_db(self):
-        '''
-        Starting the data base connection
-        print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Connecting to Data Base>")
-        '''
-        mydb = mysql.connector.connect(
+        self.db = mysql.connector.connect(
             host = self.host,
             user = self.user,
             passwd = self.password
             )
-        self.db = mydb
-        print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Connected Succesfully to DB>")
-        return mydb
+        self.cursor = self.db.cursor()
+
+    # def connect_db(self):
+    #     '''
+    #     Starting the data base connection
+    #     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Connecting to Data Base>")
+    #     '''
+    #     mydb = mysql.connector.connect(
+    #         host = self.host,
+    #         user = self.user,
+    #         passwd = self.password
+    #         )
+    #     self.db = mydb
+    #     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Connected Succesfully to DB>")
+    #     return mydb
     
     def create_database(self, cursor):
         '''
@@ -35,8 +40,7 @@ class DB_connect:
         '''
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                username VARCHAR(256) NOT NULL,
+                username VARCHAR(256) PRIMARY KEY,
                 password VARCHAR(50) NOT NULL
             )
         """)
@@ -49,19 +53,38 @@ class DB_connect:
             CREATE TABLE IF NOT EXISTS user_metrics (
                 username VARCHAR(256),
                 speech_rate FLOAT,
-                correct_answers_metric FLOAT,
+                speech_rate_score FLOAT,
+                questions_score FLOAT,
+                grammar_score FLOAT,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (username, timestamp),
                 FOREIGN KEY (username) REFERENCES users(username)
             )
         """)
     
-    def insert_user_metrics(self, cursor, username, speech_rate, correct_answers_metric):
+    def drop_database(self, cursor, database_name):
+        # Drop the existing database
+        cursor.execute("DROP DATABASE IF EXISTS {}".format(database_name))
+
+        # Commit changes
+        self.db.commit()
+
+
+    def create_all_tables(self, cursor):
+        self.create_users_table(cursor)
+        self.create_user_metrics_table(cursor)
+
+    def insert_user_metrics(self, cursor, username, speech_rate, speech_rate_score, questions_score, grammar_score):
         '''
-        Insert new record of user test with the 2 metrics: speech_rate, correct_answers_metric 
+        Insert new record of user test with 4 metrics: speech_rate, speech_rate_score, questions_score
+        and grammar_score.
         Will be called after the user will finish a test and the metrics will be calculated 
         '''
-        insert_query = "INSERT INTO user_metrics (username, speech_rate, correct_answers_metric) VALUES (%s, %s, %s)"
-        cursor.execute(insert_query, (username, speech_rate, correct_answers_metric))
+        print(f"You speak at a rate of {speech_rate} words per second")
+        print(f"Your questions grade is {questions_score}")
+        print(f"Your grammar score is {grammar_score}")
+        insert_query = "INSERT INTO user_metrics (username, speech_rate, speech_rate_score, questions_score, grammar_score) \
+            VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(insert_query, (username, speech_rate, speech_rate_score, questions_score, grammar_score))
         self.db.commit()
-        # print("User metrics inserted successfully!")
+        print("User metrics inserted successfully!")

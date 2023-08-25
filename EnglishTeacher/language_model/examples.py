@@ -87,3 +87,49 @@ Student answers:
 COMPARE_EXAMPLE_3_RESPONSE = """1. INCORRECT
 2. INCORRECT
 3. INCORRECT"""
+
+GRAMMAR_EXAMPLE_1_USER_GOOD_YOUNG = """
+The sun goes down, and like, it makes the sea look all shiny and pretty. The waves were like, \
+gentle on the beach, and it feels really calm, you know? People were walking on the sand, \
+and you could hear their happy voices mixing with the sounds of nature.
+"""
+GRAMMAR_EXAMPLE_1_RESPONSE_GOOD_YOUNG = """4
+"""
+
+GRAMMAR_EXAMPLE_2_USER_GOOD_ADULT = """
+So as the sun dips below the horizon, it kind of casts this warm, golden glow across the sea, \
+you know what I'm saying? The waves were gently lapping against the shore, creating this sense \
+of tranquility. And you had people just strolling along the beach, and their laughter, \
+it mixed so nicely with the soothing sounds of nature.
+"""
+GRAMMAR_EXAMPLE_2_RESPONSE_GOOD_ADULT = """5"""
+
+GRAMMAR_EXAMPLE_3_USER_MEDIUM_YOUNG = """
+The sun goes down, and like, it make the sea look shiny and pretty. The waves was gentle on the beach, \
+and it feel real calm, you know? People was walking on the sand, \
+and you could hear their happy voices mixing with nature sounds.
+"""
+GRAMMAR_EXAMPLE_3_RESPONSE_MEDIUM_YOUNG = """3"""
+
+GRAMMAR_EXAMPLE_4_USER_MEDIUM_ADULT = """
+So, as the sun dips below the horizon, it kind of casted this warm, golden glow across the sea, \
+you know what I'm saying? The waves was gently lapping against the shore, \
+creating this sense of tranquility. And you had people just strolling along the beach, \
+and their laughter, it mixed so nice with the soothing sounds of nature.
+"""
+GRAMMAR_EXAMPLE_4_RESPONSE_MEDIUM_ADULT = """3"""
+
+GRAMMAR_EXAMPLE_5_USER_BAD_YOUNG = """
+The sun, it go down, and, um, it make the sea, you know, look all shiny and pretty? \
+The waves, they're like, gentle on the beach, and it's like, really calm and stuff. \
+People, you know, they walk on the sand, and, uh, their happy voices mix with, um, nature sounds.
+"""
+GRAMMAR_EXAMPLE_5_RESPONSE_BAD_YOUNG = """2"""
+
+GRAMMAR_EXAMPLE_6_USER_BAD_ADULT = """
+So, like, the sun is, you know, dipping below the horizon? And it's casting this warm, golden, like, \
+glow across, um, the sea? And, like, the waves are, you know, gently lapping against the shore, \
+creating this, um, sense of tranquility? And, um, people are just, you know, strolling along the beach, \
+and their laughter, it's, like, mixing really nicely with, um, the soothing sounds of nature.
+"""
+GRAMMAR_EXAMPLE_6_RESPONSE_BAD_ADULT = """1"""
