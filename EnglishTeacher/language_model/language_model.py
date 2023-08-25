@@ -71,17 +71,19 @@ Your response should be a list of grades, no need for explanations."""
             (COMPARE_EXAMPLE_3_USER, COMPARE_EXAMPLE_3_RESPONSE)
         ]
         self.grammar_context = """
-You are now a language evaluator with a specific focus on grading grammar and verb conjugation mistakes in text.\
-Your main task is to assess the provided paragraphs and assign them a grade from 1 to 5 based on their grammar \
-and verb conjugation accuracy. You should consider both the correctness of grammar and the appropriate usage \
-of verb conjugations in your evaluation. Grading Scale: \
-1: The text has severe grammar and verb conjugation mistakes that significantly impair its clarity and coherence. \
-2: The text contains noticeable grammar and verb conjugation errors that affect its readability and understanding. \
-3: The text has some grammar and verb conjugation issues, but they don't heavily detract from the overall meaning. \
-4: The text contains only minor grammar and verb conjugation errors that have a minimal impact on its quality. \
-5: The text demonstrates impeccable grammar and verb conjugation usage, with no or only very minor errors. \
+You are now a language evaluator with a specific focus on grading grammar and verb conjugation mistakes in \
+text (ignore punctuation while grading the text). Your main task is to assess the provided paragraphs and \
+assign them a grade from 1 to 5 based on their grammar and verb conjugation accuracy. You should consider \
+both the correctness of grammar and the appropriate usage of verb conjugations in your evaluation. The \
+general instructions for the grade are: \
+1 - The text has severe grammar and verb conjugation mistakes that significantly impair its clarity and coherence. \
+2 - The text contains noticeable grammar and verb conjugation errors that might affect its readability and understanding. \
+3 - The text has some grammar and verb conjugation issues, but they don't heavily detract from the overall meaning. \
+4 - The text contains only minor grammar and verb conjugation errors that have a minimal impact on its quality. \
+5 - The text demonstrates impeccable grammar and verb conjugation usage, with no or only very minor errors. \
 Make sure you answer in the following format - The grade is: x. Where x is the grade you choose from 1-5 \
-based on grammar and verb conjugation so x will represent the level of english as desribed by grading scale."""
+based on grammar and verb conjugation so x will represent the level of english as desribed by grading scale. \
+Please stick to the guidelines."""
         self.grammar_examples = [(GRAMMAR_EXAMPLE_1_USER_GOOD_YOUNG, GRAMMAR_EXAMPLE_1_RESPONSE_GOOD_YOUNG),
                                  (GRAMMAR_EXAMPLE_2_USER_GOOD_ADULT, GRAMMAR_EXAMPLE_2_RESPONSE_GOOD_ADULT),
                                  (GRAMMAR_EXAMPLE_3_USER_MEDIUM_YOUNG, GRAMMAR_EXAMPLE_3_RESPONSE_MEDIUM_YOUNG),
@@ -147,12 +149,15 @@ based on grammar and verb conjugation so x will represent the level of english a
 
     def grade_grammar(self, prompt: str):
         """
-        Grades """
+        Grades the speech based on it's grammar and verb conjugation from 1 to 5 using the LLM.
+        """
+        start_prompt = "Grade the next text as I explained before in the context. Text: "
+        final_prompt = start_prompt + prompt
         for i in range(5):
             res_grammar = palm.chat(
                 context=self.grammar_context,
                 examples=self.grammar_examples,
-                messages=prompt
+                messages=final_prompt
             )
             answer = res_grammar.last
             print(answer)

@@ -45,7 +45,7 @@ class Signing:
                 print(Fore.RED + Style.BRIGHT + "Invalid username or password.")
                 print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "-------------------------------")
                 print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "1. Try Again")
-                print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "2. Exit")
+                print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "2. Return to Main Menu")
                 choice = int(input(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Enter your choice: "))
                 if choice == 2:
                     break
