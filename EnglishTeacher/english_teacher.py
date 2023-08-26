@@ -39,6 +39,7 @@ class EnglishTeacher:
         self.stop_words = ['Quit.', 'Stop.', 'Exit.', 'Bye.', 'Bye-bye.']
         self.logged_in = False
         self.user_name = "Sign in or sign up first :)"
+        self.wps = []
 
     def menu_navigation(self):
         """
@@ -100,13 +101,14 @@ class EnglishTeacher:
         Handling the flow of a free conversation between the user and bard. 
         Record the conversation in "self.conversation" for future use.
         """
-        msg = "Hello! Feel free to ask or say anything."
+        msg = self.llm.init_chat(True)
         print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Assistant>")
         print(Fore.LIGHTBLUE_EX + Style.NORMAL + msg)
         self.tts.read_aloud(text=msg)
+        self.wps = []
         while True:
             try:
-                prompt = record_while_transcribing(audio_model=self.whisper)
+                prompt, wps = record_while_transcribing(audio_model=self.whisper)
                 self.conversation.append({"type": "user", "content": prompt})
                 if prompt in self.stop_words:
                     break
@@ -120,7 +122,7 @@ class EnglishTeacher:
                 print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Assistant>")
                 print(Fore.LIGHTBLUE_EX + Style.NORMAL + response)
                 self.tts.read_aloud(text=response)
-
+                self.wps.append(wps)
             except WaitTimeoutError:
                 msg = "No audio detected! Ending Conversation, Bye-bye!"
                 print(Fore.RED + Style.BRIGHT + msg)

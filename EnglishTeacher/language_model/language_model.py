@@ -60,8 +60,14 @@ Your response should be a list of grades, no need for explanations."""
             (COMPARE_EXAMPLE_3_USER, COMPARE_EXAMPLE_3_RESPONSE)
         ]
 
-    def get_chat_response(self, prompt: str):
-        if self.palm is None:
+    def init_chat(self, offer_topics: bool = True):
+        if offer_topics:
+            res = palm.chat(
+                context=self.chat_context,
+                messages=[{'author': '0', 'content': f"Start the conversation, offer 3 topics to discuss, but allow more to be raised."}],
+            )
+            self.palm = res
+        else:
             res = palm.chat(
                 context=self.chat_context,
                 messages=[{'author': '0', 'content': f"Start."}],
@@ -69,6 +75,12 @@ Your response should be a list of grades, no need for explanations."""
             )
             res.messages[1] = {'author': '1', 'content': "Hello! Feel free to ask or say anything."}
             self.palm = res
+
+        return self.palm.last
+
+    def get_chat_response(self, prompt):
+        if self.palm is None:
+            self.init_chat()
         self.palm = self.palm.reply(prompt)
         answer = self.palm.last
         return answer

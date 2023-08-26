@@ -1,4 +1,6 @@
 import io
+import time
+
 import speech_recognition as sr
 from datetime import datetime, timedelta
 from queue import Queue
@@ -30,7 +32,7 @@ def record_while_transcribing(audio_model, wait_time=5, sample_rate=16000):
     phrase_timeout = 0.001
 
     transcription = ['']
-
+    audio_lengths = []
     with source:
         recorder.adjust_for_ambient_noise(source)
 
@@ -70,9 +72,9 @@ def record_while_transcribing(audio_model, wait_time=5, sample_rate=16000):
                     data = data_queue.get()
                     last_sample += data
 
+
                 audio_data = sr.AudioData(last_sample, source.SAMPLE_RATE, source.SAMPLE_WIDTH)
                 wav_data = io.BytesIO(audio_data.get_wav_data())
-
                 # Read the transcription.
                 segments, _ = audio_model.transcribe(wav_data, beam_size=5, language='en')
                 segments = list(segments)
@@ -89,6 +91,7 @@ def record_while_transcribing(audio_model, wait_time=5, sample_rate=16000):
 
                 print(Fore.CYAN + Style.NORMAL + transcription[-1].lower(), end=' ')
                 counter = 0
+
             else:
                 sleep(1)
                 counter += 1
@@ -97,7 +100,10 @@ def record_while_transcribing(audio_model, wait_time=5, sample_rate=16000):
         except KeyboardInterrupt:
             break
     print(Fore.RED + '\nRecording Stopped')
-    return " ".join(transcription)
+    ts = " ".join(transcription)
+    words = len(ts.split(sep=' '))
+    length = len(audio_data.frame_data) / sample_rate
+    return ts, words/length
 
 if __name__ == '__main__':
     stt = WhisperModel("small.en", device="cpu", compute_type="int8", num_workers=(2**12), cpu_threads=8)
