@@ -2,9 +2,9 @@ import time
 
 from pydub import AudioSegment
 
-from EnglishTeacher.recorder.recorder import Recorder
-from EnglishTeacher.speech_to_text.speech_to_text import SpeechToText
-from EnglishTeacher.language_model.language_model import LanguageModel
+from recorder.recorder import Recorder
+from speech_to_text.speech_to_text import SpeechToText
+from language_model.language_model import LanguageModel
 
 
 class FluencyMarker:
@@ -28,6 +28,8 @@ class FluencyMarker:
         self.qna_pairs = None
         self.grade = None
         self.speech_rate = None
+        self.speech_grade = None
+        self.grammar_score = None
         self.speech = None
         self.audio_length = None
         self.llm = LanguageModel()
@@ -51,6 +53,8 @@ class FluencyMarker:
         audio = AudioSegment.from_file(path)
         self.audio_length = audio.duration_seconds
         self.speech = self.stt.get_transcription(audio=path.as_posix()).lstrip()
+        print("Speech of the user:")
+        print(self.speech)
 
     def evaluate(self):
         model_answers = self.llm.answer_questions(text=self.speech, questions=self.questions)
@@ -59,16 +63,17 @@ class FluencyMarker:
         num_words = len(self.speech.split(sep=' '))
         self.speech_rate = num_words / self.audio_length # save audio length differently
         self.grade = (questions_answered / len(self.questions)) * 100
+        text_answer, self.grammar_score = self.llm.grade_grammar(prompt=self.speech)
         if self.speech_rate <= 1.0:
-            self.grade -= 15
+            self.speech_grade = 1
         elif 1 < self.speech_rate <= 1.5:
-            self.grade -= 10
+            self.speech_grade = 2
         elif 1.5 < self.speech_rate <= 2.0:
-            self.grade -= 5
-        elif 2 < self.speech_rate <= 2.5:
-            self.grade -= 0
-        elif self.speech_rate > 2.5:
-            self.grade += 5
+            self.speech_grade = 3
+        elif 2 < self.speech_rate <= 2.4:
+            self.speech_grade = 4
+        else:
+            self.speech_grade = 5
 
 
 if __name__ == '__main__':
@@ -81,7 +86,8 @@ if __name__ == '__main__':
     fm.get_speech()
     fm.evaluate()
     print(f"\n{fm.speech}\n")
-    print(f"You speak at a rate of {fm.speech_rate} words per second")
-    print(f"Your grade is {fm.grade}")
+    print(f"You speak at a rate of: {fm.speech_rate} words per second")
+    print(f"Your questions grade is: {fm.grade}")
+    print(f"Your grammar score is: {fm.grammar_score}")
     end = time.time()
     print(f"Time passed {end-start}")
