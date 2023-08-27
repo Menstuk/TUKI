@@ -1,4 +1,7 @@
 import io
+import time
+from librosa import get_duration
+import numpy as np
 import speech_recognition as sr
 from datetime import datetime, timedelta
 from queue import Queue
@@ -6,11 +9,12 @@ from time import sleep
 
 from colorama import Fore, Style
 from faster_whisper import WhisperModel
+from pydub import AudioSegment
 
 from language_model.language_model import LanguageModel
 
 
-def record_while_transcribing(audio_model, wait_time=5, sample_rate=16000):
+def record_while_transcribing(audio_model, wait_time=10, sample_rate=16000):
 
     # The last time a recording was retreived from the queue.
     phrase_time = None
@@ -30,7 +34,7 @@ def record_while_transcribing(audio_model, wait_time=5, sample_rate=16000):
     phrase_timeout = 0.001
 
     transcription = ['']
-
+    audio_lengths = []
     with source:
         recorder.adjust_for_ambient_noise(source)
 
@@ -72,7 +76,7 @@ def record_while_transcribing(audio_model, wait_time=5, sample_rate=16000):
 
                 audio_data = sr.AudioData(last_sample, source.SAMPLE_RATE, source.SAMPLE_WIDTH)
                 wav_data = io.BytesIO(audio_data.get_wav_data())
-
+                audio_lengths.append(len(last_sample)/audio_data.sample_rate/audio_data.sample_width)
                 # Read the transcription.
                 segments, _ = audio_model.transcribe(wav_data, beam_size=5, language='en')
                 segments = list(segments)
@@ -89,6 +93,7 @@ def record_while_transcribing(audio_model, wait_time=5, sample_rate=16000):
 
                 print(Fore.CYAN + Style.NORMAL + transcription[-1].lower(), end=' ')
                 counter = 0
+
             else:
                 sleep(1)
                 counter += 1
@@ -97,11 +102,11 @@ def record_while_transcribing(audio_model, wait_time=5, sample_rate=16000):
         except KeyboardInterrupt:
             break
     print(Fore.RED + '\nRecording Stopped')
-    return " ".join(transcription)
-
-if __name__ == '__main__':
-    stt = WhisperModel("small.en", device="cpu", compute_type="int8", num_workers=(2**12), cpu_threads=8)
-
-    words = record_while_transcribing(audio_model=stt)
-
-    print("\n\n",words)
+    ts = " ".join(transcription)
+    words = len(ts.split(sep=' '))
+    length = sum(audio_lengths)
+    if length == 0:
+        wps = 0
+    else:
+        wps = words/length
+    return ts, wps

@@ -5,6 +5,7 @@ import shutil
 import queue
 import threading as th
 import mysql.connector
+import numpy as np
 
 from colorama import Fore, Style
 from faster_whisper import WhisperModel
@@ -40,6 +41,7 @@ class EnglishTeacher:
         self.stop_words = ['Quit.', 'Stop.', 'Exit.', 'Bye.', 'Bye-bye.']
         self.logged_in = False
         self.user_name = "Sign in or sign up first :)"
+        self.wps = []
 
     def valid_choice(self, choice):
         """
@@ -125,13 +127,13 @@ class EnglishTeacher:
         Handling the flow of a free conversation between the user and bard. 
         Record the conversation in "self.conversation" for future use.
         """
-        msg = "Hello! Feel free to ask or say anything."
+        msg = self.llm.init_chat(True)
         print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Assistant>")
         print(Fore.LIGHTBLUE_EX + Style.NORMAL + msg)
         self.tts.read_aloud(text=msg)
         while True:
             try:
-                prompt = record_while_transcribing(audio_model=self.whisper)
+                prompt, wps = record_while_transcribing(audio_model=self.whisper)
                 self.conversation.append({"type": "user", "content": prompt})
                 if prompt in self.stop_words:
                     break
@@ -143,15 +145,19 @@ class EnglishTeacher:
                 response = self.llm.get_chat_response(prompt=prompt)
                 self.conversation.append({"type": "assistant", "content": response})
                 print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Assistant>")
-                print(Fore.LIGHTBLUE_EX + Style.NORMAL + response)
+                print(Fore.LIGHTBLUE_EX + Style.NORMAL + str(response))
                 self.tts.read_aloud(text=response)
-
+                if wps != 0:
+                    self.wps.append(wps)
             except WaitTimeoutError:
                 msg = "No audio detected! Ending Conversation, Bye-bye!"
                 print(Fore.RED + Style.BRIGHT + msg)
                 self.tts.read_aloud(text=msg)
                 break
-
+        if len(self.wps) > 0:
+            print(Fore.GREEN + Style.DIM + f"This conversation's average speech rate was {sum(self.wps) / len(self.wps)} WPS")
+        else:
+            print(Fore.GREEN + Style.DIM + f"This conversation's average speech rate was 0 WPS")
 
 if __name__ == '__main__':
     db_obj = DB_connect()  # Create an instance of DB_connect

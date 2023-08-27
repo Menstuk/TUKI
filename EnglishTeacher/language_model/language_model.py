@@ -44,8 +44,8 @@ class LanguageModel:
         self.api_key = os.getenv("PALM_API_KEY")
         palm.configure(api_key=self.api_key)
         self.chat_context = """You are tasked with chatting with the user in a friendly manner.
-        Do not contain any signs such as |,-,* in your responses.
-        Punctuation is allowed, and even appreciated.
+        You respond with an informative, yet brief response. A response CANNOT be longer than 100 words.
+        Every response should intrigue the user to continue the conversation.
         """
         self.chat_examples = [(
             "What are your favorite movies?", CHAT_EXAMPLE_RESPONSE)]
@@ -91,8 +91,14 @@ Please stick to the guidelines."""
                                  (GRAMMAR_EXAMPLE_5_USER_BAD_YOUNG, GRAMMAR_EXAMPLE_5_RESPONSE_BAD_YOUNG),
                                  (GRAMMAR_EXAMPLE_6_USER_BAD_ADULT, GRAMMAR_EXAMPLE_6_RESPONSE_BAD_ADULT)]
 
-    def get_chat_response(self, prompt: str):
-        if self.palm is None:
+    def init_chat(self, offer_topics: bool = True):
+        if offer_topics:
+            res = palm.chat(
+                context=self.chat_context,
+                messages=[{'author': '0', 'content': f"Start the conversation, offer 3 topics to discuss, but allow more to be raised."}],
+            )
+            self.palm = res
+        else:
             res = palm.chat(
                 context=self.chat_context,
                 messages=[{'author': '0', 'content': f"Start."}],
@@ -100,6 +106,12 @@ Please stick to the guidelines."""
             )
             res.messages[1] = {'author': '1', 'content': "Hello! Feel free to ask or say anything."}
             self.palm = res
+
+        return self.palm.last
+
+    def get_chat_response(self, prompt):
+        if self.palm is None:
+            self.init_chat()
         self.palm = self.palm.reply(prompt)
         answer = self.palm.last
         return answer
