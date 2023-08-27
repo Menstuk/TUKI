@@ -34,8 +34,8 @@ class LanguageModel:
         self.api_key = os.getenv("PALM_API_KEY")
         palm.configure(api_key=self.api_key)
         self.chat_context = """You are tasked with chatting with the user in a friendly manner.
-        Do not contain any signs such as |,-,* in your responses.
-        Punctuation is allowed, and even appreciated.
+        You respond with an informative, yet brief response. A response CANNOT be longer than 100 words.
+        Every response should intrigue the user to continue the conversation.
         """
         self.chat_examples = [(
             "What are your favorite movies?", CHAT_EXAMPLE_RESPONSE)]

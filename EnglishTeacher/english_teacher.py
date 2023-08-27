@@ -5,6 +5,7 @@ import shutil
 import queue
 import threading as th
 import mysql.connector
+import numpy as np
 
 from colorama import Fore, Style
 from faster_whisper import WhisperModel
@@ -105,7 +106,6 @@ class EnglishTeacher:
         print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Assistant>")
         print(Fore.LIGHTBLUE_EX + Style.NORMAL + msg)
         self.tts.read_aloud(text=msg)
-        self.wps = []
         while True:
             try:
                 prompt, wps = record_while_transcribing(audio_model=self.whisper)
@@ -120,15 +120,19 @@ class EnglishTeacher:
                 response = self.llm.get_chat_response(prompt=prompt)
                 self.conversation.append({"type": "assistant", "content": response})
                 print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Assistant>")
-                print(Fore.LIGHTBLUE_EX + Style.NORMAL + response)
+                print(Fore.LIGHTBLUE_EX + Style.NORMAL + str(response))
                 self.tts.read_aloud(text=response)
-                self.wps.append(wps)
+                if wps != 0:
+                    self.wps.append(wps)
             except WaitTimeoutError:
                 msg = "No audio detected! Ending Conversation, Bye-bye!"
                 print(Fore.RED + Style.BRIGHT + msg)
                 self.tts.read_aloud(text=msg)
                 break
-
+        if len(self.wps) > 0:
+            print(Fore.GREEN + Style.DIM + f"This conversation's average speech rate was {sum(self.wps) / len(self.wps)} WPS")
+        else:
+            print(Fore.GREEN + Style.DIM + f"This conversation's average speech rate was 0 WPS")
 
 if __name__ == '__main__':
     # db = DB_connect.connect_db
