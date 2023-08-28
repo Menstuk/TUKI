@@ -3,6 +3,7 @@ from colorama import Fore, Style
 class Signing:
     def __init__(self):
         self.user_name = None
+        self.user_level  = None
         
 
     def sign_up(self, db, cursor):
@@ -23,6 +24,7 @@ class Signing:
         db.commit()
         print(Fore.LIGHTBLUE_EX + Style.BRIGHT + user_name + " registered successfully")
         self.user_name = user_name
+        self.user_level = 'low' # New users will start will the level - 'low'
         return self.user_name
     
     def sign_in(self, db, cursor):
@@ -51,7 +53,12 @@ class Signing:
                     break
         if log_in_flag:
             self.user_name = user_name
-        return log_in_flag, self.user_name
+            query = "SELECT level FROM users WHERE username = %s"
+            cursor.execute(query, (self.user_name,))
+            result = cursor.fetchone() # Fetch the result
+            self.user_level = result[0]
+
+        return log_in_flag, self.user_name, self.user_level
     
     def username_exists(self, cursor, username):
         '''

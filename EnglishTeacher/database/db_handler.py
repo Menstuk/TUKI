@@ -42,7 +42,7 @@ class DB_connect:
             CREATE TABLE IF NOT EXISTS users (
                 username VARCHAR(256) PRIMARY KEY,
                 password VARCHAR(50) NOT NULL,
-                level VARCHAR(8)
+                level VARCHAR(8) DEFAULT 'low'
             )
         """)
     
@@ -82,6 +82,7 @@ class DB_connect:
         Will be called after the user will finish a test and the metrics will be calculated 
         '''
         print(f"You speak at a rate of: {speech_rate} words per second")
+        print(f"Your speech rate score is: {speech_rate_score} / 5")
         print(f"Your answered questions grade is: {questions_score} / 5")
         print(f"Your grammar score is: {grammar_score} / 5")
         insert_query = "INSERT INTO user_metrics (username, speech_rate, speech_rate_score, \
@@ -100,4 +101,5 @@ class DB_connect:
             level = "medium"
         cursor.execute(update_query, (level, username))
         self.db.commit()
+        print(f"Your English level is: {level}")
         print("User stats inserted successfully!")

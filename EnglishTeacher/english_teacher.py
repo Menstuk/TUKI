@@ -41,6 +41,7 @@ class EnglishTeacher:
         self.stop_words = ['Quit.', 'Stop.', 'Exit.', 'Bye.', 'Bye-bye.']
         self.logged_in = False
         self.user_name = "Sign in or sign up first :)"
+        self.user_level = None
         self.wps = []
 
     def valid_choice(self, choice):
@@ -94,15 +95,15 @@ class EnglishTeacher:
                         break
                     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Please enter your choice again.")
                     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Make sure your choice consist of numbers alone")
-                index = int(choice)
+                index = int(choice) 
                 if index == 0:
                     break
                 elif index == 1:
                     self.user_name = self.signing.sign_up(self.db, self.cursor)
                     self.logged_in = True
                 elif index == 2:
-                    signed_in, self.user_name = self.signing.sign_in(self.db, self.cursor)
-                    self.logged_in = signed_in
+                    self.logged_in, self.user_name, self.user_level = self.signing.sign_in(self.db, self.cursor)
+                    print(f"Hey {self.user_name}, right now your English level is {self.user_level}")
                 else:
                     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Invalid input! \
                           Please select one of the options below")
@@ -158,7 +159,7 @@ class EnglishTeacher:
 
 if __name__ == '__main__':
     db_obj = DB_connect()  # Create an instance of DB_connect
-    db_obj.drop_database(cursor=db_obj.cursor, database_name="EnglishTeacher")
+    # db_obj.drop_database(cursor=db_obj.cursor, database_name="EnglishTeacher")
     db_obj.create_database(cursor=db_obj.cursor)
     db_obj.create_all_tables(cursor=db_obj.cursor)
 

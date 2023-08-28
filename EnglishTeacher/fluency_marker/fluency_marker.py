@@ -61,16 +61,17 @@ class FluencyMarker:
         grades = self.llm.compare_answers(qna_pairs=self.qna_pairs, model_answers=model_answers)
         questions_answered = sum([1 for grade in grades if grade == "CORRECT"])
         num_words = len(self.speech.split(sep=' '))
-        self.speech_rate = num_words / self.audio_length # save audio length differently
-        self.grade = (questions_answered / len(self.questions))
+        self.speech_rate = round(num_words / self.audio_length, 3) # save audio length differently
+
+        self.grade = int((questions_answered / len(self.questions)) * 5) 
         text_answer, self.grammar_score = self.llm.grade_grammar(prompt=self.speech)
         if self.speech_rate <= 1.0:
             self.speech_grade = 1
         elif 1 < self.speech_rate <= 1.5:
             self.speech_grade = 2
-        elif 1.5 < self.speech_rate <= 2.0:
+        elif 1.5 < self.speech_rate <= 1.9:
             self.speech_grade = 3
-        elif 2 < self.speech_rate <= 2.4:
+        elif 2 < self.speech_rate <= 2.3:
             self.speech_grade = 4
         else:
             self.speech_grade = 5
