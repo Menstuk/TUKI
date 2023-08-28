@@ -41,7 +41,8 @@ class DB_connect:
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 username VARCHAR(256) PRIMARY KEY,
-                password VARCHAR(50) NOT NULL
+                password VARCHAR(50) NOT NULL,
+                level VARCHAR(8)
             )
         """)
     
@@ -74,17 +75,29 @@ class DB_connect:
         self.create_users_table(cursor)
         self.create_user_metrics_table(cursor)
 
-    def insert_user_metrics(self, cursor, username, speech_rate, speech_rate_score, questions_score, grammar_score):
+    def insert_user_stats(self, cursor, username, speech_rate, speech_rate_score, questions_score, grammar_score):
         '''
         Insert new record of user test with 4 metrics: speech_rate, speech_rate_score, questions_score
         and grammar_score.
         Will be called after the user will finish a test and the metrics will be calculated 
         '''
         print(f"You speak at a rate of: {speech_rate} words per second")
-        print(f"Your questions grade is: {questions_score}")
-        print(f"Your grammar score is: {grammar_score}")
-        insert_query = "INSERT INTO user_metrics (username, speech_rate, speech_rate_score, questions_score, grammar_score) \
-            VALUES (%s, %s, %s, %s, %s)"
+        print(f"Your answered questions grade is: {questions_score} / 5")
+        print(f"Your grammar score is: {grammar_score} / 5")
+        insert_query = "INSERT INTO user_metrics (username, speech_rate, speech_rate_score, \
+            questions_score, grammar_score) VALUES (%s, %s, %s, %s, %s)"
         cursor.execute(insert_query, (username, speech_rate, speech_rate_score, questions_score, grammar_score))
         self.db.commit()
-        print("User metrics inserted successfully!")
+        update_query = """
+            UPDATE users
+            SET level = %s
+            WHERE username = %s
+        """
+        level = "low"
+        if speech_rate_score >= 4 and questions_score == 5 and grammar_score >= 4:
+            level = "high"
+        elif speech_rate_score >= 2 and questions_score >= 3 and grammar_score >= 3:
+            level = "medium"
+        cursor.execute(update_query, (level, username))
+        self.db.commit()
+        print("User stats inserted successfully!")

@@ -71,16 +71,13 @@ class EnglishTeacher:
                 if index == 0:
                     break
                 elif index == 1:
-                    print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Welcome To Learning Mode!")
-                    # Start Here the learning mode (grammar correction and rephrased sentences)
-                elif index == 2:
                     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Welcome To Test Mode!")
                     self.test_mode()
-                elif index == 3:
+                elif index == 2:
                     # Start here the free conversation
                     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Welcome To Conversation Mode!")
                     self.free_conversation()
-                elif index == 4:
+                elif index == 3:
                     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Signing Out...")
                     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Bye Bye " + self.user_name)
                     self.user_name = "Sign in or sign up first :)"
@@ -119,7 +116,7 @@ class EnglishTeacher:
         wps = fm.speech_rate
         speech_rate_score = fm.speech_grade
         grammar_score = fm.grammar_score
-        self.db_handler.insert_user_metrics(cursor=self.cursor, username=self.user_name,speech_rate=wps, \
+        self.db_handler.insert_user_stats(cursor=self.cursor, username=self.user_name,speech_rate=wps, \
             speech_rate_score= speech_rate_score, questions_score=grade, grammar_score = grammar_score, )
 
     def free_conversation(self):
@@ -161,7 +158,7 @@ class EnglishTeacher:
 
 if __name__ == '__main__':
     db_obj = DB_connect()  # Create an instance of DB_connect
-    # db_obj.drop_database(cursor=db_obj.cursor, database_name="EnglishTeacher")
+    db_obj.drop_database(cursor=db_obj.cursor, database_name="EnglishTeacher")
     db_obj.create_database(cursor=db_obj.cursor)
     db_obj.create_all_tables(cursor=db_obj.cursor)
 
