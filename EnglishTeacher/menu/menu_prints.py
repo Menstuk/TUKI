@@ -3,7 +3,7 @@ from colorama import Fore, Style
 class Menu:
     def __init__(self):
         self.main_menu_logged_out_options = ['Sign Up', 'Sign In']
-        self.main_menu_logged_in_options = ['Learning Mode', 'Test Mode', 'Free Conversation', 'Sign Out']
+        self.main_menu_logged_in_options = ['Test Mode', 'Free Conversation', 'Sign Out']
     
     def print_main_menu_out(self):
         # Menu for signed out users

@@ -14,7 +14,7 @@ from pydub import AudioSegment
 from language_model.language_model import LanguageModel
 
 
-def record_while_transcribing(audio_model, wait_time=10, sample_rate=16000):
+def record_while_transcribing(audio_model, wait_time=8, sample_rate=16000):
 
     # The last time a recording was retreived from the queue.
     phrase_time = None
