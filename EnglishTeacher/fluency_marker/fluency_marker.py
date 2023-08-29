@@ -63,7 +63,8 @@ class FluencyMarker:
         num_words = len(self.speech.split(sep=' '))
         self.speech_rate = round(num_words / self.audio_length, 3) # save audio length differently
 
-        self.grade = int((questions_answered / len(self.questions)) * 5) 
+        self.grade = (questions_answered / len(self.questions)) * 5
+        self.grade = int(self.grade)
         text_answer, self.grammar_score = self.llm.grade_grammar(prompt=self.speech)
         if self.speech_rate <= 1:
             self.speech_grade = 1
