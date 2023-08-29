@@ -65,13 +65,13 @@ class FluencyMarker:
 
         self.grade = int((questions_answered / len(self.questions)) * 5) 
         text_answer, self.grammar_score = self.llm.grade_grammar(prompt=self.speech)
-        if self.speech_rate <= 1.0:
+        if self.speech_rate <= 1:
             self.speech_grade = 1
         elif 1 < self.speech_rate <= 1.5:
             self.speech_grade = 2
         elif 1.5 < self.speech_rate <= 1.9:
             self.speech_grade = 3
-        elif 2 < self.speech_rate <= 2.3:
+        elif 1.9 < self.speech_rate <= 2.3:
             self.speech_grade = 4
         else:
             self.speech_grade = 5
