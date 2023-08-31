@@ -172,7 +172,6 @@ Please stick to the guidelines."""
                 messages=final_prompt
             )
             answer = res_grammar.last
-            print(answer)
             grammar_grade = extract_grade(answer)
             if grammar_grade:
                 return answer, grammar_grade

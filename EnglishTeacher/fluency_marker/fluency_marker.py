@@ -1,5 +1,6 @@
 import time
 
+from colorama import Fore, Style
 from pydub import AudioSegment
 
 from recorder.recorder import Recorder
@@ -53,8 +54,8 @@ class FluencyMarker:
         audio = AudioSegment.from_file(path)
         self.audio_length = audio.duration_seconds
         self.speech = self.stt.get_transcription(audio=path.as_posix()).lstrip()
-        print("Speech of the user:")
-        print(self.speech)
+        print(Fore.CYAN + Style.BRIGHT + "User Speech:")
+        print(Fore.CYAN + Style.NORMAL + self.speech + "\n")
 
     def evaluate(self):
         model_answers = self.llm.answer_questions(text=self.speech, questions=self.questions)
@@ -62,10 +63,10 @@ class FluencyMarker:
         questions_answered = sum([1 for grade in grades if grade == "CORRECT"])
         num_words = len(self.speech.split(sep=' '))
         self.speech_rate = round(num_words / self.audio_length, 3) # save audio length differently
+        self.grade = questions_answered
 
-        self.grade = (questions_answered / len(self.questions)) * 5
-        self.grade = int(self.grade)
         text_answer, self.grammar_score = self.llm.grade_grammar(prompt=self.speech)
+        print(Fore.LIGHTYELLOW_EX + Style.NORMAL + text_answer + "\n")
         if self.speech_rate <= 1:
             self.speech_grade = 1
         elif 1 < self.speech_rate <= 1.5:

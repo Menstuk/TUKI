@@ -1,21 +1,22 @@
 from colorama import Fore, Style
 import mysql.connector
 
+
 class DB_connect:
     def __init__(self):
         self.host = 'localhost'
         self.user = 'root'
         self.password = 'password123'
         self.db = mysql.connector.connect(
-            host = self.host,
-            user = self.user,
-            passwd = self.password
+            host=self.host,
+            user=self.user,
+            passwd=self.password
             )
         self.cursor = self.db.cursor()
 
     # def connect_db(self):
     #     '''
-    #     Starting the data base connection
+    #     Starting the database connection
     #     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Connecting to Data Base>")
     #     '''
     #     mydb = mysql.connector.connect(
@@ -29,7 +30,7 @@ class DB_connect:
     
     def create_database(self, cursor):
         '''
-        Create data base if not exist yet
+        Create database if it doesn't exist yet
         '''
         cursor.execute("CREATE DATABASE IF NOT EXISTS EnglishTeacher")
         cursor.execute("USE EnglishTeacher")
@@ -70,21 +71,20 @@ class DB_connect:
         # Commit changes
         self.db.commit()
 
-
     def create_all_tables(self, cursor):
         self.create_users_table(cursor)
         self.create_user_metrics_table(cursor)
 
     def insert_user_stats(self, cursor, username, speech_rate, speech_rate_score, questions_score, grammar_score):
-        '''
+        """
         Insert new record of user test with 4 metrics: speech_rate, speech_rate_score, questions_score
         and grammar_score.
         Will be called after the user will finish a test and the metrics will be calculated 
-        '''
-        print(f"You speak at a rate of: {speech_rate} words per second")
-        print(f"Your speech rate score is: {speech_rate_score} / 5")
-        print(f"Your answered questions grade is: {questions_score} / 5")
-        print(f"Your grammar score is: {grammar_score} / 5")
+        """
+        print(Fore.LIGHTBLUE_EX + Style.BRIGHT + f"You speak at a rate of: {speech_rate} words per second")
+        print(Fore.LIGHTBLUE_EX + Style.BRIGHT + f"Your speech rate score is: {speech_rate_score} / 5")
+        print(Fore.LIGHTBLUE_EX + Style.BRIGHT + f"Your answered questions grade is: {questions_score} / 5")
+        print(Fore.LIGHTBLUE_EX + Style.BRIGHT + f"Your grammar score is: {grammar_score} / 5\n")
         insert_query = "INSERT INTO user_metrics (username, speech_rate, speech_rate_score, \
             questions_score, grammar_score) VALUES (%s, %s, %s, %s, %s)"
         cursor.execute(insert_query, (username, speech_rate, speech_rate_score, questions_score, grammar_score))
@@ -101,5 +101,5 @@ class DB_connect:
             level = "medium"
         cursor.execute(update_query, (level, username))
         self.db.commit()
-        print(f"Your English level is: {level}")
-        print("User stats inserted successfully!")
+        print(Fore.LIGHTGREEN_EX + Style.BRIGHT + f"Your English level is: {level}")
+        print(Fore.LIGHTBLUE_EX + Style.DIM + "User stats inserted successfully!\n")
