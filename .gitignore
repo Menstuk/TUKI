@@ -4,3 +4,7 @@
 *.wav
 venv/
 session/
+/__pycache__/
+__pycache__/
+*.pyc
+*.pyc

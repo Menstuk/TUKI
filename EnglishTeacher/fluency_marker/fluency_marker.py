@@ -1,30 +1,36 @@
+import json
+import os
+import pathlib
+import random
 import time
 
+from colorama import Fore, Style
 from pydub import AudioSegment
-
-from recorder.recorder import Recorder
-from speech_to_text.speech_to_text import SpeechToText
-from language_model.language_model import LanguageModel
+from EnglishTeacher.recorder.recorder import Recorder
+from EnglishTeacher.speech_to_text.speech_to_text import SpeechToText
+from EnglishTeacher.language_model.language_model import LanguageModel
 
 
 class FluencyMarker:
     def __init__(self, recorder: Recorder, speech_to_text: SpeechToText):
         self.recorder = recorder
         self.stt = speech_to_text
-        self.questions = [
-            "What is your age?",
-            "How many siblings do you have?",
-            "What does your father do for a living?",
-            "What does your mother do for a living?",
-            "What was your favorite class in high-school?"
-        ]
-        self.model_questions = [
-            "What is the speaker's age?",
-            "How many siblings does the speaker have?",
-            "What does the speaker's father do for a living?",
-            "What does the speaker's mother do for a living?",
-            "What was the speaker's favorite class in high-school?"
-        ]
+        self.questions = None
+        self.model_questions = None
+        # self.questions = [
+        #     "What is your age?",
+        #     "How many siblings do you have?",
+        #     "What does your father do for a living?",
+        #     "What does your mother do for a living?",
+        #     "What was your favorite class in high-school?"
+        # ]
+        # self.model_questions = [
+        #     "What is the speaker's age?",
+        #     "How many siblings does the speaker have?",
+        #     "What does the speaker's father do for a living?",
+        #     "What does the speaker's mother do for a living?",
+        #     "What was the speaker's favorite class in high-school?"
+        # ]
         self.qna_pairs = None
         self.grade = None
         self.speech_rate = None
@@ -34,16 +40,57 @@ class FluencyMarker:
         self.audio_length = None
         self.llm = LanguageModel()
 
+    def collect_questions(self, user_level: str):
+        pool_path = pathlib.Path().parent.resolve() / 'question_pool'
+        topics = os.listdir(pool_path)
+        all_questions = []
+        chosen_questions = []
+
+        for topic in topics:
+            with open(pool_path / topic, 'r') as f:
+                questions_json = json.load(f)
+            all_questions.append(questions_json["questions"])
+
+        if user_level == 'low':
+            topic_index = random.randint(0, (len(all_questions)-1))
+            chosen_topic = all_questions[topic_index]
+            while len(chosen_questions) < 5:
+                question_index = random.randint(0, (len(chosen_topic)-1))
+                chosen_questions.append(chosen_topic.pop(question_index))
+
+        elif user_level == 'medium':
+            while len(chosen_questions) < 5:
+                topic_index = random.randint(0, (len(all_questions) - 1))
+                chosen_topic = all_questions[topic_index]
+                for i in range(2):
+                    question_index = random.randint(0, (len(chosen_topic) - 1))
+                    chosen_questions.append(chosen_topic.pop(question_index))
+                all_questions.pop(topic_index)
+            q_to_remove = random.randint(0, (len(chosen_questions) - 1))
+            chosen_questions.pop(q_to_remove)
+
+        elif user_level == 'high':
+            while len(chosen_questions) < 5:
+                topic_index = random.randint(0, (len(all_questions) - 1))
+                chosen_topic = all_questions[topic_index]
+                question_index = random.randint(0, (len(chosen_topic) - 1))
+                chosen_questions.append(chosen_topic.pop(question_index))
+                all_questions.pop(topic_index)
+
+        self.questions = [question["display"] for question in chosen_questions]
+        self.model_questions = [question["model"] for question in chosen_questions]
+
     def ask_questions(self):
         qna_pairs = []
-        print("Answer the following questions in a concise manner:")
+        print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Answer the following questions in a concise manner:")
+        time.sleep(3)
         for i, question in enumerate(self.questions):
-            answer = input(f"{question} ")
+            answer = input(Fore.LIGHTBLUE_EX + Style.NORMAL + f"{question} ")
             qna_pairs.append({"question": self.model_questions[i], "answer": answer})
         self.qna_pairs = qna_pairs
 
     def get_speech(self):
-        print("\nTo evaluate your fluency, you are required to speak about yourself.")
+        print(Fore.LIGHTGREEN_EX + Style.NORMAL + "\nTo evaluate your fluency, you are required to speak about yourself.")
         time.sleep(5)
         print("You will be recorded and evaluated according to this recording.")
         time.sleep(5)
@@ -53,8 +100,8 @@ class FluencyMarker:
         audio = AudioSegment.from_file(path)
         self.audio_length = audio.duration_seconds
         self.speech = self.stt.get_transcription(audio=path.as_posix()).lstrip()
-        print("Speech of the user:")
-        print(self.speech)
+        print("\n" + Fore.CYAN + Style.BRIGHT + "User Speech:")
+        print(Fore.CYAN + Style.NORMAL + self.speech + "\n")
 
     def evaluate(self):
         model_answers = self.llm.answer_questions(text=self.speech, questions=self.questions)
@@ -62,10 +109,10 @@ class FluencyMarker:
         questions_answered = sum([1 for grade in grades if grade == "CORRECT"])
         num_words = len(self.speech.split(sep=' '))
         self.speech_rate = round(num_words / self.audio_length, 3) # save audio length differently
+        self.grade = questions_answered
 
-        self.grade = (questions_answered / len(self.questions)) * 5
-        self.grade = int(self.grade)
         text_answer, self.grammar_score = self.llm.grade_grammar(prompt=self.speech)
+        print(Fore.LIGHTYELLOW_EX + Style.NORMAL + text_answer + "\n")
         if self.speech_rate <= 1:
             self.speech_grade = 1
         elif 1 < self.speech_rate <= 1.5:
@@ -84,6 +131,7 @@ if __name__ == '__main__':
     stt = SpeechToText()
     rec = Recorder()
     fm = FluencyMarker(recorder=rec, speech_to_text=stt)
+    fm.collect_questions("high")
     fm.ask_questions()
     fm.get_speech()
     fm.evaluate()

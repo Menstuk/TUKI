@@ -30,7 +30,7 @@ class EnglishTeacher:
         os.mkdir(path / "session")
         self.mic = Recorder()
         self.llm = LanguageModel()
-        self.whisper = WhisperModel("medium.en", device="cpu", compute_type="int8")
+        self.whisper = WhisperModel(model_size_or_path="medium.en", device="cpu", compute_type="int8")
         self.stt = SpeechToText()
         self.tts = TextToSpeech()
         self.db_handler = db_handler
@@ -103,13 +103,14 @@ class EnglishTeacher:
                     self.logged_in = True
                 elif index == 2:
                     self.logged_in, self.user_name, self.user_level = self.signing.sign_in(self.db, self.cursor)
-                    print(f"Hey {self.user_name}, right now your English level is {self.user_level}")
+                    print(f"Right now your English level is {self.user_level}")
                 else:
                     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Invalid input! \
                           Please select one of the options below")
 
     def test_mode(self):
         fm = FluencyMarker(recorder=self.mic, speech_to_text=self.stt)
+        fm.collect_questions(user_level=self.user_level)
         fm.ask_questions()
         fm.get_speech()
         fm.evaluate()
@@ -117,8 +118,14 @@ class EnglishTeacher:
         wps = fm.speech_rate
         speech_rate_score = fm.speech_grade
         grammar_score = fm.grammar_score
-        self.db_handler.insert_user_stats(cursor=self.cursor, username=self.user_name,speech_rate=wps, \
-            speech_rate_score= speech_rate_score, questions_score=grade, grammar_score = grammar_score, )
+        self.db_handler.insert_user_stats(
+            cursor=self.cursor,
+            username=self.user_name,
+            speech_rate=wps,
+            speech_rate_score=speech_rate_score,
+            questions_score=grade,
+            grammar_score=grammar_score,
+        )
 
     def free_conversation(self):
         """
@@ -153,9 +160,9 @@ class EnglishTeacher:
                 self.tts.read_aloud(text=msg)
                 break
         if len(self.wps) > 0:
-            print(Fore.GREEN + Style.DIM + f"This conversation's average speech rate was {sum(self.wps) / len(self.wps)} WPS")
+            print(Fore.GREEN + Style.DIM + f"This conversation's average speech rate was {sum(self.wps) / len(self.wps)} WPS\n")
         else:
-            print(Fore.GREEN + Style.DIM + f"This conversation's average speech rate was 0 WPS")
+            print(Fore.GREEN + Style.DIM + f"This conversation's average speech rate was 0 WPS\n")
 
 if __name__ == '__main__':
     db_obj = DB_connect()  # Create an instance of DB_connect

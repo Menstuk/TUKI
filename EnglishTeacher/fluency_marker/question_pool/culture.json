@@ -1,0 +1,33 @@
+{
+  "topic": "culture",
+  "questions": [
+    {
+      "display": "What is your favorite musical genre?",
+      "model": "What is the speaker's favorite musical genre?"
+    },
+    {
+      "display": "What is your favorite musical artist?",
+      "model": "What is the speaker's favorite musical artist?"
+    },
+    {
+      "display": "What sports team do you support?",
+      "model": "What sports team does the speaker support?"
+    },
+    {
+      "display": "What is your favorite movie?",
+      "model": "What is the speaker's favorite movie?"
+    },
+    {
+      "display": "What is your favorite TV show?",
+      "model": "What is the speaker's favorite TV show?"
+    },
+    {
+      "display": "What is your preferred movie genre? (e.g. Action/Comedy/Drama)",
+      "model": "What is the speaker's preferred movie genre? (e.g. Action/Comedy/Drama)"
+    },
+    {
+      "display": "What is your preferred TV show genre? (e.g. Action/Comedy/Drama)",
+      "model": "What is the speaker's preferred TV show genre? (e.g. Action/Comedy/Drama)"
+    }
+  ]
+}

@@ -3,7 +3,7 @@ import re
 
 import google.generativeai as palm
 
-from language_model.examples import *
+from EnglishTeacher.language_model.examples import *
 
 
 def parse_grades_list(input_list):
@@ -64,7 +64,8 @@ class LanguageModel:
 You are given the correct questions and answers, as well as the student's answers and you need to grade the students' answers as either CORRECT or INCORRECT.
 The answers might not be worded exactly the same, but if the general idea of the answer is the same, the answer should be graded as CORRECT.
 If the given student answer is "NONE" then the grade should be INCORRECT.
-Your response should be a list of grades, no need for explanations."""
+Your response should be a list of grades, no need for explanations.
+Even if all the answers are CORRECT or INCORRECT, reply with a numbered list of the grades!"""
         self.compare_examples = [
             (COMPARE_EXAMPLE_1_USER, COMPARE_EXAMPLE_1_RESPONSE),
             (COMPARE_EXAMPLE_2_USER, COMPARE_EXAMPLE_2_RESPONSE),
@@ -127,7 +128,8 @@ Please stick to the guidelines."""
             res = palm.chat(
                 context=self.answer_context,
                 examples=self.answer_examples,
-                messages=prompt
+                messages=prompt,
+                temperature=0
             )
             try:
                 response = parse_numbered_list(res.last)
@@ -149,7 +151,8 @@ Please stick to the guidelines."""
             res = palm.chat(
                 context=self.compare_context,
                 examples=self.compare_examples,
-                messages=prompt
+                messages=prompt,
+                temperature=0
             )
             try:
                 response = parse_numbered_list(res.last)
@@ -172,7 +175,6 @@ Please stick to the guidelines."""
                 messages=final_prompt
             )
             answer = res_grammar.last
-            print(answer)
             grammar_grade = extract_grade(answer)
             if grammar_grade:
                 return answer, grammar_grade

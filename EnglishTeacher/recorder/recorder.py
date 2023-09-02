@@ -20,7 +20,7 @@ class Recorder:
             audio = r.listen(mic, timeout=timeout)
             audio = io.BytesIO(audio.get_wav_data())
             audio = AudioSegment.from_file(audio)
-            full_path = pathlib.Path.cwd() / "session" / f"{self._get_datetime()}.wav"
+            full_path = pathlib.Path(r"E:\GitHub\TUKI\EnglishTeacher") / "session" / f"{self._get_datetime()}.wav"
             audio.export(full_path.as_posix(), format='wav')
             print(Fore.RED + 'Recording Stopped')
             return full_path

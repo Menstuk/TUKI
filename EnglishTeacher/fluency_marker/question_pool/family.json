@@ -1,0 +1,28 @@
+{
+  "topic": "family",
+  "questions": [
+    {
+      "display": "How many brothers do you have?",
+      "model": "How many brothers does the speaker have?"
+    },    {
+      "display": "How many sisters do you have?",
+      "model": "How many sisters does the speaker have?"
+    },
+    {
+      "display": "How many years are your parents married?",
+      "model": "How many years are the speaker's parents married?"
+    },
+    {
+      "display": "Does your family own a pet?",
+      "model": "Does the speaker's family own a pet?"
+    },
+    {
+      "display": "How many siblings does your father have?",
+      "model": "How many siblings does the speaker's father have?"
+    },
+    {
+      "display": "How many siblings does your mother have?",
+      "model": "How many siblings does the speaker's mother have?"
+    }
+  ]
+}
