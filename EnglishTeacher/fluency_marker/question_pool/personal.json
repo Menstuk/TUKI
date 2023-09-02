@@ -1,0 +1,29 @@
+{
+  "topic": "personal",
+  "questions": [
+    {
+      "display": "How old are you?",
+      "model": "How old is the speaker?"
+    },
+    {
+      "display": "What do you do for a living?",
+      "model": "What does the speaker do for a living?"
+    },
+    {
+      "display": "What is your preferred pet to have?",
+      "model": "What is the speaker's preferred pet to have?"
+    },
+    {
+      "display": "What city were you born in?",
+      "model": "What city was the speaker born in?"
+    },
+    {
+      "display": "How many people do you live with?",
+      "model": "How many people does the speaker live with?"
+    },
+    {
+      "display": "What is your birth month?",
+      "model": "What is the speaker's birth month?"
+    }
+  ]
+}

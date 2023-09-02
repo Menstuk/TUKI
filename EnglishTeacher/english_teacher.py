@@ -110,6 +110,7 @@ class EnglishTeacher:
 
     def test_mode(self):
         fm = FluencyMarker(recorder=self.mic, speech_to_text=self.stt)
+        fm.collect_questions(user_level=self.user_level)
         fm.ask_questions()
         fm.get_speech()
         fm.evaluate()

@@ -1,0 +1,29 @@
+{
+  "topic": "education",
+  "questions": [
+    {
+      "display": "What was/is your favorite class in high-school?",
+      "model": "What was/is the speaker's favorite class in high-school?"
+    },
+     {
+      "display": "What was/is the class you struggled with the most in high-school?",
+      "model": "What was/is the class the speaker struggled with the most in high-school?"
+    },
+    {
+      "display": "What did you study or plan to study in university/college?",
+      "model": "What did the speaker study or plan to study in university/college?"
+    },
+    {
+      "display": "What was/is the class in which you were/are the most successful in high-school?",
+      "model": "What was/is the class in which the speaker was/is the most successful in high-school?"
+    },
+    {
+      "display": "What do you study or plan to study in university/college?",
+      "model": "What does the speaker study or plan to study in university/college?"
+    },
+    {
+      "display": "How many non-native languages did you learn in school?",
+      "model": "How many non-native languages did the speaker learn in school?"
+    }
+  ]
+}
