@@ -17,20 +17,6 @@ class FluencyMarker:
         self.stt = speech_to_text
         self.questions = None
         self.model_questions = None
-        # self.questions = [
-        #     "What is your age?",
-        #     "How many siblings do you have?",
-        #     "What does your father do for a living?",
-        #     "What does your mother do for a living?",
-        #     "What was your favorite class in high-school?"
-        # ]
-        # self.model_questions = [
-        #     "What is the speaker's age?",
-        #     "How many siblings does the speaker have?",
-        #     "What does the speaker's father do for a living?",
-        #     "What does the speaker's mother do for a living?",
-        #     "What was the speaker's favorite class in high-school?"
-        # ]
         self.qna_pairs = None
         self.grade = None
         self.speech_rate = None
@@ -41,7 +27,7 @@ class FluencyMarker:
         self.llm = LanguageModel()
 
     def collect_questions(self, user_level: str):
-        pool_path = pathlib.Path().parent.resolve() / 'question_pool'
+        pool_path = pathlib.Path(r"E:\GitHub\TUKI\EnglishTeacher\fluency_marker") / 'question_pool'
         topics = os.listdir(pool_path)
         all_questions = []
         chosen_questions = []
@@ -108,7 +94,7 @@ class FluencyMarker:
         grades = self.llm.compare_answers(qna_pairs=self.qna_pairs, model_answers=model_answers)
         questions_answered = sum([1 for grade in grades if grade == "CORRECT"])
         num_words = len(self.speech.split(sep=' '))
-        self.speech_rate = round(num_words / self.audio_length, 3) # save audio length differently
+        self.speech_rate = round(num_words / self.audio_length, 3)  # save audio length differently
         self.grade = questions_answered
 
         text_answer, self.grammar_score = self.llm.grade_grammar(prompt=self.speech)
@@ -131,7 +117,7 @@ if __name__ == '__main__':
     stt = SpeechToText()
     rec = Recorder()
     fm = FluencyMarker(recorder=rec, speech_to_text=stt)
-    fm.collect_questions("high")
+    fm.collect_questions("medium")
     fm.ask_questions()
     fm.get_speech()
     fm.evaluate()
