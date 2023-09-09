@@ -27,4 +27,3 @@ class Recorder:
 
     def _get_datetime(self):
         return str(datetime.now().strftime("%d-%m-%Y_%H-%M-%S"))
-

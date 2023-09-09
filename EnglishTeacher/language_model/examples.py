@@ -50,7 +50,7 @@ Student answers:
 1. Omri
 2. 26 years old.
 3. Tel Aviv-Yaffo"""
-COMPARE_EXAMPLE_1_RESPONSE ="""1. CORRECT
+COMPARE_EXAMPLE_1_RESPONSE = """1. CORRECT
 2. CORRECT
 3. CORRECT  """
 

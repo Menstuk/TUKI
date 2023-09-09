@@ -95,8 +95,8 @@ class DB_connect:
             WHERE username = %s
         """
         level = "low"
-        if (speech_rate_score >= 4 and questions_score == 5 and grammar_score >= 4) or \
-            (speech_rate_score == 3 and questions_score == 5 and grammar_score == 5):
+        if ((speech_rate_score >= 4 and questions_score == 5 and grammar_score >= 4) or
+                (speech_rate_score == 3 and questions_score == 5 and grammar_score == 5)):
             level = "high"
         elif speech_rate_score >= 2 and questions_score >= 3 and grammar_score >= 3:
             level = "medium"

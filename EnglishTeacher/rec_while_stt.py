@@ -1,17 +1,11 @@
 import io
-import time
-from librosa import get_duration
-import numpy as np
+
 import speech_recognition as sr
 from datetime import datetime, timedelta
 from queue import Queue
 from time import sleep
 
 from colorama import Fore, Style
-from faster_whisper import WhisperModel
-from pydub import AudioSegment
-
-from language_model.language_model import LanguageModel
 
 
 def record_while_transcribing(audio_model, wait_time=8, sample_rate=16000):

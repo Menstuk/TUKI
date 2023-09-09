@@ -5,6 +5,7 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 import re
 
+
 class TextToSpeech:
     def __init__(self, slow=False, language='en'):
         pygame.init()

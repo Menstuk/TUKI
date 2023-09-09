@@ -1,4 +1,3 @@
-import pathlib
 from faster_whisper import WhisperModel
 
 

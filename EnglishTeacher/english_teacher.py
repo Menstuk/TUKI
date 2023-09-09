@@ -1,11 +1,6 @@
 import os
-import sys
 import pathlib
 import shutil
-import queue
-import threading as th
-import mysql.connector
-import numpy as np
 
 from colorama import Fore, Style
 from faster_whisper import WhisperModel
@@ -163,6 +158,7 @@ class EnglishTeacher:
             print(Fore.GREEN + Style.DIM + f"This conversation's average speech rate was {sum(self.wps) / len(self.wps)} WPS\n")
         else:
             print(Fore.GREEN + Style.DIM + f"This conversation's average speech rate was 0 WPS\n")
+
 
 if __name__ == '__main__':
     db_obj = DB_connect()  # Create an instance of DB_connect

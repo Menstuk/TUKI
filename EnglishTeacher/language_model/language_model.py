@@ -83,7 +83,7 @@ general instructions for the grade are: \
 4 - The text contains only minor grammar and verb conjugation errors that have a minimal impact on its quality. \
 5 - The text demonstrates impeccable grammar and verb conjugation usage, with no or only very minor errors. \
 Make sure you answer in the following format - The grade is: x. Where x is the grade you choose from 1-5 \
-based on grammar and verb conjugation so x will represent the level of english as desribed by grading scale. \
+based on grammar and verb conjugation so x will represent the level of english as described by grading scale. \
 Please stick to the guidelines."""
         self.grammar_examples = [(GRAMMAR_EXAMPLE_1_USER_GOOD_YOUNG, GRAMMAR_EXAMPLE_1_RESPONSE_GOOD_YOUNG),
                                  (GRAMMAR_EXAMPLE_2_USER_GOOD_ADULT, GRAMMAR_EXAMPLE_2_RESPONSE_GOOD_ADULT),
@@ -164,7 +164,7 @@ Please stick to the guidelines."""
 
     def grade_grammar(self, prompt: str):
         """
-        Grades the speech based on it's grammar and verb conjugation from 1 to 5 using the LLM.
+        Grades the speech based on its grammar and verb conjugation from 1 to 5 using the LLM.
         """
         start_prompt = "Grade the next text as I explained before in the context. Text: "
         final_prompt = start_prompt + prompt

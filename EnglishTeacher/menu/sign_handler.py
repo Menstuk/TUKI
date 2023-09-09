@@ -1,19 +1,19 @@
 from colorama import Fore, Style
 
+
 class Signing:
     def __init__(self):
         self.user_name = None
-        self.user_level  = None
-        
+        self.user_level = None
 
     def sign_up(self, db, cursor):
-        '''
+        """
         Sign up for new user, forcing unique username and taking care of updating users table
-        '''
+        """
         print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Sign Up>")
         while True:
             user_name = input(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Please enter your username: ")
-            if self.username_exists(cursor, user_name): # Check if username already exists
+            if self.username_exists(cursor, user_name):  # Check if username already exists
                 print(Fore.RED + Style.BRIGHT + "Username already taken. Please choose different username.")
             else:
                 break
@@ -24,13 +24,13 @@ class Signing:
         db.commit()
         print(Fore.LIGHTBLUE_EX + Style.BRIGHT + user_name + " registered successfully")
         self.user_name = user_name
-        self.user_level = 'low' # New users will start will the level - 'low'
+        self.user_level = 'low'  # New users will start will the level - 'low'
         return self.user_name
     
     def sign_in(self, db, cursor):
-        '''
+        """
         Signing in user with username and password, if not succeeded user can try again or exit
-        '''
+        """
         log_in_flag = False
         while not log_in_flag: 
             print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Sign In>")
@@ -40,10 +40,10 @@ class Signing:
             select_query = "SELECT * FROM users WHERE username = %s AND password = %s"
             cursor.execute(select_query, (user_name, passwd))
             
-            if cursor.fetchone(): # If user identified succesfully
+            if cursor.fetchone():  # If user identified successfully
                 print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "Hey " + user_name + ", nice to see you again!")
                 log_in_flag = True
-            else: # If not he can try again or quit
+            else:  # If not he can try again or quit
                 print(Fore.RED + Style.BRIGHT + "Invalid username or password.")
                 print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "-------------------------------")
                 print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "1. Try Again")
@@ -55,18 +55,16 @@ class Signing:
             self.user_name = user_name
             query = "SELECT level FROM users WHERE username = %s"
             cursor.execute(query, (self.user_name,))
-            result = cursor.fetchone() # Fetch the result
+            result = cursor.fetchone()  # Fetch the result
             self.user_level = result[0]
 
         return log_in_flag, self.user_name, self.user_level
     
     def username_exists(self, cursor, username):
-        '''
+        """
         Checks if username is unique - if exists already or not
-        '''
+        """
         query = "SELECT username FROM users WHERE username = %s"
         cursor.execute(query, (username,))
         existing_username = cursor.fetchone()
         return existing_username is not None
-
-

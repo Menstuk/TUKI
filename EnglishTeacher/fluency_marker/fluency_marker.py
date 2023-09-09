@@ -2,7 +2,6 @@ import json
 import os
 import pathlib
 import random
-import time
 
 from colorama import Fore, Style
 from pydub import AudioSegment
@@ -78,9 +77,9 @@ class FluencyMarker:
     def get_speech(self):
         print(Fore.LIGHTGREEN_EX + Style.NORMAL + "\nTo evaluate your fluency, you are required to speak about yourself.")
         time.sleep(5)
-        print("You will be recorded and evaluated according to this recording.")
+        print(Fore.LIGHTGREEN_EX + Style.NORMAL + "You will be recorded and evaluated according to this recording.")
         time.sleep(5)
-        print("When speaking, include all the information you provided at the beginning.")
+        print(Fore.LIGHTGREEN_EX + Style.NORMAL + "When speaking, include all the information you provided at the beginning.")
         time.sleep(5)
         path = self.recorder.record()
         audio = AudioSegment.from_file(path)
