@@ -1,7 +1,7 @@
 import os
 import pathlib
 import shutil
-
+import json
 from colorama import Fore, Style
 from faster_whisper import WhisperModel
 

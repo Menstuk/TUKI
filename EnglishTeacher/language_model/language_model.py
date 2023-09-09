@@ -155,7 +155,6 @@ Please stick to the guidelines."""
             try:
                 response = parse_numbered_list(res.last)
                 response = parse_grades_list(response)
-                print("Response is: ", response)
                 if not type(response) == list or len(response) != len(qna_pairs):
                     raise Exception
                 return response

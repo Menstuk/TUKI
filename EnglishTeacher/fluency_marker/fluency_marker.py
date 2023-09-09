@@ -9,6 +9,11 @@ from EnglishTeacher.recorder.recorder import Recorder
 from EnglishTeacher.speech_to_text.speech_to_text import SpeechToText
 from EnglishTeacher.language_model.language_model import LanguageModel
 
+with open("configuration.json", "r") as f:
+    cfg = json.load(f)
+
+fm_params = cfg["fluency_marker"]
+
 
 class FluencyMarker:
     def __init__(self, recorder: Recorder, speech_to_text: SpeechToText):
@@ -98,13 +103,13 @@ class FluencyMarker:
 
         text_answer, self.grammar_score = self.llm.grade_grammar(prompt=self.speech)
         print(Fore.LIGHTYELLOW_EX + Style.NORMAL + text_answer + "\n")
-        if self.speech_rate <= 1:
+        if self.speech_rate <= fm_params["1to2"]:
             self.speech_grade = 1
-        elif 1 < self.speech_rate <= 1.5:
+        elif fm_params["1to2"] < self.speech_rate <= fm_params["2to3"]:
             self.speech_grade = 2
-        elif 1.5 < self.speech_rate <= 1.9:
+        elif fm_params["2to3"] < self.speech_rate <= fm_params["3to4"]:
             self.speech_grade = 3
-        elif 1.9 < self.speech_rate <= 2.3:
+        elif fm_params["3to4"] < self.speech_rate <= fm_params["4to5"]:
             self.speech_grade = 4
         else:
             self.speech_grade = 5

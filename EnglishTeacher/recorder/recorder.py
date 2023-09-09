@@ -5,13 +5,19 @@ from colorama import Fore
 from pydub import AudioSegment
 import speech_recognition as sr
 from speech_recognition.exceptions import WaitTimeoutError
+import json
+
+with open("configuration.json", "r") as f:
+    cfg = json.load(f)
+
+rec_params = cfg["recorder"]
 
 
 class Recorder:
     def __init__(self):
         pass
 
-    def record(self, threshold=1.5, sample_rate=8000, timeout=10) -> pathlib.Path:
+    def record(self, threshold=rec_params["threshold"], sample_rate=rec_params["sample_rate"], timeout=rec_params["timeout"]) -> pathlib.Path:
         r = sr.Recognizer()
         r.pause_threshold = threshold
         with sr.Microphone(sample_rate=sample_rate) as mic:
