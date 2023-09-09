@@ -1,3 +1,26 @@
 {
-
+  "db_handler": {
+    "init": {
+      "host": "localhost",
+      "user": "root",
+      "password": "password123"
+    },
+    "user_stats": {
+      "high1": {
+        "speech_rate_score": 4,
+        "questions_score": 5,
+        "grammar_score": 4
+      },
+      "high2": {
+        "speech_rate_score": 3,
+        "questions_score": 5,
+        "grammar_score": 5
+      },
+      "medium": {
+        "speech_rate_score": 2,
+        "questions_score": 3,
+        "grammar_score": 3
+      }
+    }
+  }
 }

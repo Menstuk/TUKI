@@ -2,7 +2,7 @@ import json
 import os
 import pathlib
 import random
-
+import time
 from colorama import Fore, Style
 from pydub import AudioSegment
 from EnglishTeacher.recorder.recorder import Recorder

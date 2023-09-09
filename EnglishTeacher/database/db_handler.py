@@ -1,12 +1,19 @@
+import json
+
 from colorama import Fore, Style
 import mysql.connector
+
+with open("configuration.json", "r") as f:
+    cfg = json.load(f)
+
+db_params = cfg["db_handler"]
 
 
 class DB_connect:
     def __init__(self):
-        self.host = 'localhost'
-        self.user = 'root'
-        self.password = 'password123'
+        self.host = db_params["init"]["host"]
+        self.user = db_params["init"]["user"]
+        self.password = db_params["init"]["password"]
         self.db = mysql.connector.connect(
             host=self.host,
             user=self.user,
@@ -29,16 +36,16 @@ class DB_connect:
     #     return mydb
     
     def create_database(self, cursor):
-        '''
+        """
         Create database if it doesn't exist yet
-        '''
+        """
         cursor.execute("CREATE DATABASE IF NOT EXISTS EnglishTeacher")
         cursor.execute("USE EnglishTeacher")
     
     def create_users_table(self, cursor):
-        '''
+        """
         Create general user table for sign up\in and identify users
-        '''
+        """
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 username VARCHAR(256) PRIMARY KEY,
@@ -48,9 +55,9 @@ class DB_connect:
         """)
     
     def create_user_metrics_table(self, cursor):
-        '''
+        """
         Create the table that will store user data and progress using timestamp to track improvement over time
-        '''
+        """
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS user_metrics (
                 username VARCHAR(256),
@@ -95,10 +102,17 @@ class DB_connect:
             WHERE username = %s
         """
         level = "low"
-        if ((speech_rate_score >= 4 and questions_score == 5 and grammar_score >= 4) or
-                (speech_rate_score == 3 and questions_score == 5 and grammar_score == 5)):
+        if ((speech_rate_score >= db_params["user_stats"]["high1"]["speech_rate_score"] and
+            questions_score == db_params["user_stats"]["high1"]["questions_score"] and
+            grammar_score >= db_params["user_stats"]["high1"]["grammar_score"])
+            or
+            (speech_rate_score == db_params["user_stats"]["high2"]["speech_rate_score"] and
+            questions_score == db_params["user_stats"]["high2"]["questions_score"] and
+                grammar_score == db_params["user_stats"]["high2"]["grammar_score"])):
             level = "high"
-        elif speech_rate_score >= 2 and questions_score >= 3 and grammar_score >= 3:
+        elif (speech_rate_score >= db_params["user_stats"]["medium"]["speech_rate_score"] and
+              questions_score >= db_params["user_stats"]["medium"]["questions_score"] and
+              grammar_score >= db_params["user_stats"]["medium"]["grammar_score"]):
             level = "medium"
         cursor.execute(update_query, (level, username))
         self.db.commit()
