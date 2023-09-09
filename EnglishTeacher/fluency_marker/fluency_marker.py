@@ -116,7 +116,7 @@ if __name__ == '__main__':
     stt = SpeechToText()
     rec = Recorder()
     fm = FluencyMarker(recorder=rec, speech_to_text=stt)
-    fm.collect_questions("medium")
+    fm.collect_questions("low")
     fm.ask_questions()
     fm.get_speech()
     fm.evaluate()

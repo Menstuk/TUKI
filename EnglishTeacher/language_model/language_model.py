@@ -9,11 +9,9 @@ from EnglishTeacher.language_model.examples import *
 def parse_grades_list(input_list):
     output_list = []
     for item in input_list:
-        match = re.search(r'\b(CORRECT|INCORRECT)\b', item)
+        match = re.search(r'\b(CORRECT|INCORRECT)\b', item.upper())
         if match:
             output_list.append(match.group())
-        else:
-            output_list.append(item)
     return output_list
 
 
@@ -157,6 +155,9 @@ Please stick to the guidelines."""
             try:
                 response = parse_numbered_list(res.last)
                 response = parse_grades_list(response)
+                print("Response is: ", response)
+                if not type(response) == list or len(response) != len(qna_pairs):
+                    raise Exception
                 return response
             except:
                 print(f"Parsing response failed. Try {i + 1}/5")
@@ -181,40 +182,10 @@ Please stick to the guidelines."""
             else:
                 print("Failed to extract a grade from LLM answer")
                 print(f"Attempt number {i+1} out of {5}")
-                
+
 
 if __name__ == '__main__':
-    questions = [
-        "What is your age?",
-        "How many siblings do you have?",
-        "What does your father do for a living?",
-        "What does your mother do for a living?",
-        "What was your favorite class in high-school?"
-    ]
-    qna_pairs = [
-        {
-            "question": "What is your age?",
-            "answer": "26"
-        },
-        {
-            "question": "How many siblings do you have?",
-            "answer": "2"
-        },
-        {
-            "question": "What does your father do for a living??",
-            "answer": "teacher"
-        },
-        {
-            "question": "What does your mother do for a living??",
-            "answer": "teacher"
-        },
-        {
-            "question": "What was your favorite class in high-school?",
-            "answer": "biology"
-        },
-    ]
-
-    text = "My name is Omri. I am 20 years old. I have one brother and one sister and both my parents are teachers."
-    llm = LanguageModel()
-    model_answers = llm.answer_questions(text=text, questions=questions)
-    grades = llm.compare_answers(qna_pairs=qna_pairs, model_answers=model_answers)
+    inp = "Some explanations\n1. Correct\n2. Incorrect\n 3. CORRECT\n4. INCORRECT\nFurther explanaions"
+    lst = parse_numbered_list(inp)
+    out = parse_grades_list(lst)
+    print(out)
