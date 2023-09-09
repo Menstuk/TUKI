@@ -4,7 +4,8 @@
     {
       "display": "How many brothers do you have?",
       "model": "How many brothers does the speaker have?"
-    },    {
+    },
+    {
       "display": "How many sisters do you have?",
       "model": "How many sisters does the speaker have?"
     },

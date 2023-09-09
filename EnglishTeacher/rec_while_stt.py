@@ -1,20 +1,18 @@
 import io
-import time
-from librosa import get_duration
-import numpy as np
+
 import speech_recognition as sr
 from datetime import datetime, timedelta
 from queue import Queue
 from time import sleep
-
+import json
 from colorama import Fore, Style
-from faster_whisper import WhisperModel
-from pydub import AudioSegment
 
-from language_model.language_model import LanguageModel
+with open("configuration.json", "r") as f:
+    cfg = json.load(f)
 
+rws_params = cfg["rec_while_stt"]
 
-def record_while_transcribing(audio_model, wait_time=8, sample_rate=16000):
+def record_while_transcribing(audio_model, wait_time=rws_params["wait_time"], sample_rate=rws_params["sample_rate"]):
 
     # The last time a recording was retreived from the queue.
     phrase_time = None
@@ -24,14 +22,14 @@ def record_while_transcribing(audio_model, wait_time=8, sample_rate=16000):
     data_queue = Queue()
     # We use SpeechRecognizer to record our audio because it has a nice feauture where it can detect when speech ends.
     recorder = sr.Recognizer()
-    recorder.energy_threshold = 1000
+    recorder.energy_threshold = rws_params["energy_threshold"]
     # Definitely do this, dynamic energy compensation lowers the energy threshold dramtically to a point where the SpeechRecognizer never stops recording.
     recorder.dynamic_energy_threshold = False
 
     source = sr.Microphone(sample_rate=sample_rate)
 
-    record_timeout = 0.75
-    phrase_timeout = 0.001
+    record_timeout = rws_params["record_timeout"]
+    phrase_timeout = rws_params["phrase_timeout"]
 
     transcription = ['']
     audio_lengths = []

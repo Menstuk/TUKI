@@ -3,12 +3,16 @@ import os
 import pathlib
 import random
 import time
-
 from colorama import Fore, Style
 from pydub import AudioSegment
 from EnglishTeacher.recorder.recorder import Recorder
 from EnglishTeacher.speech_to_text.speech_to_text import SpeechToText
 from EnglishTeacher.language_model.language_model import LanguageModel
+
+with open("configuration.json", "r") as f:
+    cfg = json.load(f)
+
+fm_params = cfg["fluency_marker"]
 
 
 class FluencyMarker:
@@ -17,20 +21,6 @@ class FluencyMarker:
         self.stt = speech_to_text
         self.questions = None
         self.model_questions = None
-        # self.questions = [
-        #     "What is your age?",
-        #     "How many siblings do you have?",
-        #     "What does your father do for a living?",
-        #     "What does your mother do for a living?",
-        #     "What was your favorite class in high-school?"
-        # ]
-        # self.model_questions = [
-        #     "What is the speaker's age?",
-        #     "How many siblings does the speaker have?",
-        #     "What does the speaker's father do for a living?",
-        #     "What does the speaker's mother do for a living?",
-        #     "What was the speaker's favorite class in high-school?"
-        # ]
         self.qna_pairs = None
         self.grade = None
         self.speech_rate = None
@@ -41,7 +31,7 @@ class FluencyMarker:
         self.llm = LanguageModel()
 
     def collect_questions(self, user_level: str):
-        pool_path = pathlib.Path().parent.resolve() / 'question_pool'
+        pool_path = pathlib.Path(r"E:\GitHub\TUKI\EnglishTeacher\fluency_marker") / 'question_pool'
         topics = os.listdir(pool_path)
         all_questions = []
         chosen_questions = []
@@ -92,9 +82,9 @@ class FluencyMarker:
     def get_speech(self):
         print(Fore.LIGHTGREEN_EX + Style.NORMAL + "\nTo evaluate your fluency, you are required to speak about yourself.")
         time.sleep(5)
-        print("You will be recorded and evaluated according to this recording.")
+        print(Fore.LIGHTGREEN_EX + Style.NORMAL + "You will be recorded and evaluated according to this recording.")
         time.sleep(5)
-        print("When speaking, include all the information you provided at the beginning.")
+        print(Fore.LIGHTGREEN_EX + Style.NORMAL + "When speaking, include all the information you provided at the beginning.")
         time.sleep(5)
         path = self.recorder.record()
         audio = AudioSegment.from_file(path)
@@ -108,18 +98,18 @@ class FluencyMarker:
         grades = self.llm.compare_answers(qna_pairs=self.qna_pairs, model_answers=model_answers)
         questions_answered = sum([1 for grade in grades if grade == "CORRECT"])
         num_words = len(self.speech.split(sep=' '))
-        self.speech_rate = round(num_words / self.audio_length, 3) # save audio length differently
+        self.speech_rate = round(num_words / self.audio_length, 3)  # save audio length differently
         self.grade = questions_answered
 
         text_answer, self.grammar_score = self.llm.grade_grammar(prompt=self.speech)
         print(Fore.LIGHTYELLOW_EX + Style.NORMAL + text_answer + "\n")
-        if self.speech_rate <= 1:
+        if self.speech_rate <= fm_params["1to2"]:
             self.speech_grade = 1
-        elif 1 < self.speech_rate <= 1.5:
+        elif fm_params["1to2"] < self.speech_rate <= fm_params["2to3"]:
             self.speech_grade = 2
-        elif 1.5 < self.speech_rate <= 1.9:
+        elif fm_params["2to3"] < self.speech_rate <= fm_params["3to4"]:
             self.speech_grade = 3
-        elif 1.9 < self.speech_rate <= 2.3:
+        elif fm_params["3to4"] < self.speech_rate <= fm_params["4to5"]:
             self.speech_grade = 4
         else:
             self.speech_grade = 5
@@ -131,7 +121,7 @@ if __name__ == '__main__':
     stt = SpeechToText()
     rec = Recorder()
     fm = FluencyMarker(recorder=rec, speech_to_text=stt)
-    fm.collect_questions("high")
+    fm.collect_questions("low")
     fm.ask_questions()
     fm.get_speech()
     fm.evaluate()

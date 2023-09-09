@@ -1,12 +1,18 @@
 from io import BytesIO
 from gtts import gTTS
+import json
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 import re
 
+with open("configuration.json", "r") as f:
+    cfg = json.load(f)
+
+tts_params = cfg["text_to_speech"]
+
 class TextToSpeech:
-    def __init__(self, slow=False, language='en'):
+    def __init__(self, slow=bool(tts_params["slow"]), language=tts_params["language"]):
         pygame.init()
         pygame.mixer.init()
         self.slow = slow

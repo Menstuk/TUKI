@@ -1,0 +1,53 @@
+{
+  "db_handler": {
+    "init": {
+      "host": "localhost",
+      "user": "root",
+      "password": "password123"
+    },
+    "user_stats": {
+      "high1": {
+        "speech_rate_score": 4,
+        "questions_score": 5,
+        "grammar_score": 4
+      },
+      "high2": {
+        "speech_rate_score": 3,
+        "questions_score": 5,
+        "grammar_score": 5
+      },
+      "medium": {
+        "speech_rate_score": 2,
+        "questions_score": 3,
+        "grammar_score": 3
+      }
+    }
+  },
+  "fluency_marker": {
+    "1to2": 1,
+    "2to3": 1.5,
+    "3to4": 1.9,
+    "4to5": 2.3
+  },
+  "recorder": {
+    "threshold": 1.5,
+    "sample_rate": 8000,
+    "timeout": 10
+  },
+  "speech_to_text": {
+    "model_size": "large-v2",
+    "device": "cpu",
+    "temperature": 0
+  },
+  "text_to_speech": {
+    "slow": 0,
+    "language": "en"
+  },
+  "rec_while_stt": {
+    "wait_time": 8,
+    "sample_rate": 16000,
+    "energy_threshold": 1000,
+    "record_timeout": 0.75,
+    "phrase_timeout": 0.001
+  }
+}
