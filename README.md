@@ -1,5 +1,5 @@
 # English Teacher Project
-A Digital Sciences for Hi-Tec final project by TUKI:<br>
+A Digital Sciences for Hi-Tech final project by TUKI:<br>
 * Sahar Machavy<br>
 * Omri Shmueli<br>
 
