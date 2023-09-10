@@ -41,10 +41,13 @@ class LanguageModel:
     def __init__(self):
         self.api_key = os.getenv("PALM_API_KEY")
         palm.configure(api_key=self.api_key)
-        self.chat_context = """You are tasked with chatting with the user in a friendly manner.
-        You respond with an informative, yet brief response. A response CANNOT be longer than 100 words.
-        Every response should intrigue the user to continue the conversation.
-        """
+        self.chat_context = """You are tasked with chatting with the user in a short and friendly manner. \
+You respond with an informative, yet brief response. A response can not be longer than 80 words! \
+Imagine it is a phone covnersation and make your anaswers accordingly. \
+Every response should intrigue the user to continue the conversation."""
+        self.prefix_prompt = "Answer to the next user prompt in a short manner like explained in the context. \
+Behave like it is a conversation over the phone. Do not exceed the limit of 80 words per relpy.\
+The next user prompt is: "
         self.chat_examples = [(
             "What are your favorite movies?", CHAT_EXAMPLE_RESPONSE)]
         self.palm = None
@@ -95,13 +98,17 @@ Please stick to the guidelines."""
             res = palm.chat(
                 context=self.chat_context,
                 messages=[{'author': '0', 'content': f"Start the conversation, offer 3 topics to discuss, but allow more to be raised."}],
+                top_k=3,
+                temperature=0.2
             )
             self.palm = res
         else:
             res = palm.chat(
                 context=self.chat_context,
                 messages=[{'author': '0', 'content': f"Start."}],
-                examples=self.chat_examples
+                examples=self.chat_examples,
+                top_k=3,
+                temperature=0.2
             )
             res.messages[1] = {'author': '1', 'content': "Hello! Feel free to ask or say anything."}
             self.palm = res
@@ -111,7 +118,8 @@ Please stick to the guidelines."""
     def get_chat_response(self, prompt):
         if self.palm is None:
             self.init_chat()
-        self.palm = self.palm.reply(prompt)
+        full_prompt = self.prefix_prompt + prompt
+        self.palm = self.palm.reply(full_prompt)
         answer = self.palm.last
         return answer
 
