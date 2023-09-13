@@ -5,16 +5,16 @@ import json
 from colorama import Fore, Style
 from faster_whisper import WhisperModel
 
-from fluency_marker.fluency_marker import FluencyMarker
-from language_model.language_model import LanguageModel
-from recorder.recorder import Recorder, WaitTimeoutError
-from speech_to_text.speech_to_text import SpeechToText
-from text_to_speech.text_to_speech import TextToSpeech
+from EnglishTeacher.fluency_marker.fluency_marker import FluencyMarker
+from EnglishTeacher.language_model.language_model import LanguageModel
+from EnglishTeacher.recorder.recorder import Recorder, WaitTimeoutError
+from EnglishTeacher.speech_to_text.speech_to_text import SpeechToText
+from EnglishTeacher.text_to_speech.text_to_speech import TextToSpeech
 from typing import Union
 from rec_while_stt import record_while_transcribing
-from menu.menu_prints import Menu
-from menu.sign_handler import Signing
-from database.db_handler import DB_connect
+from EnglishTeacher.menu.menu_prints import Menu
+from EnglishTeacher.menu.sign_handler import Signing
+from EnglishTeacher.database.db_handler import DB_connect
 
 
 class EnglishTeacher:

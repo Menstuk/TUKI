@@ -1,7 +1,8 @@
+import pathlib
 from faster_whisper import WhisperModel
 import json
 
-with open("configuration.json", "r") as f:
+with open(pathlib.Path().absolute().parent / "configuration.json", "r") as f:
     cfg = json.load(f)
 
 stt_params = cfg["speech_to_text"]

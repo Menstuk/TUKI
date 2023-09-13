@@ -1,5 +1,6 @@
 import io
 
+import pathlib
 import speech_recognition as sr
 from datetime import datetime, timedelta
 from queue import Queue
@@ -7,7 +8,7 @@ from time import sleep
 import json
 from colorama import Fore, Style
 
-with open("configuration.json", "r") as f:
+with open(pathlib.Path().absolute().parent / "configuration.json", "r") as f:
     cfg = json.load(f)
 
 rws_params = cfg["rec_while_stt"]

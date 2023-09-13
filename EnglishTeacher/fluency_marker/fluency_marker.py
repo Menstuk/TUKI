@@ -9,7 +9,7 @@ from EnglishTeacher.recorder.recorder import Recorder
 from EnglishTeacher.speech_to_text.speech_to_text import SpeechToText
 from EnglishTeacher.language_model.language_model import LanguageModel
 
-with open("configuration.json", "r") as f:
+with open(pathlib.Path().absolute().parent / "configuration.json", "r") as f:
     cfg = json.load(f)
 
 fm_params = cfg["fluency_marker"]

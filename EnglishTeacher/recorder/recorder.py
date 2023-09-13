@@ -7,7 +7,7 @@ import speech_recognition as sr
 from speech_recognition.exceptions import WaitTimeoutError
 import json
 
-with open("configuration.json", "r") as f:
+with open(pathlib.Path().absolute().parent / "configuration.json", "r") as f:
     cfg = json.load(f)
 
 rec_params = cfg["recorder"]

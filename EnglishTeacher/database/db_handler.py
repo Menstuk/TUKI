@@ -1,9 +1,10 @@
 import json
 
+import pathlib
 from colorama import Fore, Style
 import mysql.connector
 
-with open("configuration.json", "r") as f:
+with open(pathlib.Path().absolute().parent / "configuration.json", "r") as f:
     cfg = json.load(f)
 
 db_params = cfg["db_handler"]
