@@ -18,7 +18,6 @@ The product aspires to serve those who seek to improve their spoken language ski
 4. Create a dedicated virtual environment and install the requirements from the .txt file using <br>`python pip install -r requirements.txt`
 5. Set an environment variable named "PALM_API_KEY" with its value set to your PaLM API key taken from here- [Link](https://developers.generativeai.google/tutorials/setup) <br>
 6. Reboot your system.
-<br>
 
 ## User Guide
 A user guide can be found in the repository wiki - [Link to user guide](https://github.com/Menstuk/TUKI/wiki/User-Guide)
