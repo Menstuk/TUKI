@@ -21,4 +21,4 @@ The product aspires to serve those who seek to improve their spoken language ski
 <br>
 
 ## User Guide
-A user guide can be found in the repository wiki. [Link](https://github.com/Menstuk/TUKI/wiki/User-Guide)
+A user guide can be found in the repository wiki - [Link to user guide](https://github.com/Menstuk/TUKI/wiki/User-Guide)
