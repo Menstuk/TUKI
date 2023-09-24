@@ -11,7 +11,6 @@ from EnglishTeacher.recorder.recorder import Recorder, WaitTimeoutError
 from EnglishTeacher.speech_to_text.speech_to_text import SpeechToText
 from EnglishTeacher.text_to_speech.text_to_speech import TextToSpeech
 from typing import Union
-from rec_while_stt import record_while_transcribing
 from EnglishTeacher.menu.menu_prints import Menu
 from EnglishTeacher.menu.sign_handler import Signing
 from EnglishTeacher.database.db_handler import DB_connect
@@ -133,7 +132,10 @@ class EnglishTeacher:
         self.tts.read_aloud(text=msg)
         while True:
             try:
-                prompt, wps = record_while_transcribing(audio_model=self.whisper)
+                recording = self.mic.record()
+                prompt, wps = self.stt.get_transcription(recording.as_posix())
+                print(Fore.CYAN + Style.BRIGHT + "<User>")
+                print(Fore.CYAN + Style.BRIGHT + prompt)
                 self.conversation.append({"type": "user", "content": prompt})
                 if prompt in self.stop_words:
                     break

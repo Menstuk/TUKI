@@ -1,6 +1,7 @@
 import pathlib
 from faster_whisper import WhisperModel
 import json
+import librosa
 
 with open(pathlib.Path().absolute().parent / "configuration.json", "r") as f:
     cfg = json.load(f)
@@ -20,4 +21,7 @@ class SpeechToText:
         txt = ""
         for segment in segments:
             txt = txt + segment.text
-        return txt
+        words = txt.split(sep=" ")
+        length = librosa.get_duration(path=audio)
+        wps = len(words) / length
+        return txt.strip(), wps

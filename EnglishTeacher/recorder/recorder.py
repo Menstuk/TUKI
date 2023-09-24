@@ -29,7 +29,7 @@ class Recorder:
             full_path = pathlib.Path().absolute().parent / "main" / "session" / f"{self._get_datetime()}.wav"
             audio.export(full_path.as_posix(), format='wav')
             print(Fore.RED + 'Recording Stopped')
-            return full_path
+        return full_path
 
     def _get_datetime(self):
         return str(datetime.now().strftime("%d-%m-%Y_%H-%M-%S"))
