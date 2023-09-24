@@ -44,7 +44,7 @@
     "language": "en"
   },
   "rec_while_stt": {
-    "wait_time": 8,
+    "wait_time": 4,
     "sample_rate": 16000,
     "energy_threshold": 1000,
     "record_timeout": 0.75,

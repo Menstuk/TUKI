@@ -43,7 +43,7 @@ class LanguageModel:
         palm.configure(api_key=self.api_key)
         self.chat_context = """You are tasked with chatting with the user in a short and friendly manner. \
 You respond with an informative, yet brief response. A response can not be longer than 80 words! \
-Imagine it is a phone covnersation and make your anaswers accordingly. \
+Imagine it is a phone conversation and make your answers accordingly. \
 Every response should intrigue the user to continue the conversation."""
         self.prefix_prompt = "Answer to the next user prompt in a short manner like explained in the context. \
 Behave like it is a conversation over the phone. Do not exceed the limit of 80 words per relpy.\
@@ -192,7 +192,7 @@ Please stick to the guidelines."""
 
 
 if __name__ == '__main__':
-    inp = "Some explanations\n1. Correct\n2. Incorrect\n 3. CORRECT\n4. INCORRECT\nFurther explanaions"
+    inp = "Some explanations\n1. Correct\n2. Incorrect\n 3. CORRECT\n4. INCORRECT\nFurther explanations"
     lst = parse_numbered_list(inp)
     out = parse_grades_list(lst)
     print(out)

@@ -33,7 +33,7 @@ class DB_connect:
     #         passwd = self.password
     #         )
     #     self.db = mydb
-    #     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Connected Succesfully to DB>")
+    #     print(Fore.LIGHTBLUE_EX + Style.BRIGHT + "<Connected Successfully to DB>")
     #     return mydb
     
     def create_database(self, cursor):

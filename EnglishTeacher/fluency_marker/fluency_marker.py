@@ -2,7 +2,6 @@ import json
 import os
 import pathlib
 import random
-import time
 from colorama import Fore, Style
 from pydub import AudioSegment
 from EnglishTeacher.recorder.recorder import Recorder
@@ -31,7 +30,7 @@ class FluencyMarker:
         self.llm = LanguageModel()
 
     def collect_questions(self, user_level: str):
-        pool_path = pathlib.Path(r"E:\GitHub\TUKI\EnglishTeacher\fluency_marker") / 'question_pool'
+        pool_path = pathlib.Path(pathlib.Path().absolute()) / 'question_pool'
         topics = os.listdir(pool_path)
         all_questions = []
         chosen_questions = []
