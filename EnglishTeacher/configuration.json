@@ -35,7 +35,7 @@
     "timeout": 10
   },
   "speech_to_text": {
-    "model_size": "large-v2",
+    "model_size": "medium.en",
     "device": "cpu",
     "temperature": 0
   },

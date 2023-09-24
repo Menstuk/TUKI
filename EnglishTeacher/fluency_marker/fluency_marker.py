@@ -88,7 +88,7 @@ class FluencyMarker:
         path = self.recorder.record()
         audio = AudioSegment.from_file(path)
         self.audio_length = audio.duration_seconds
-        self.speech = self.stt.get_transcription(audio=path.as_posix()).lstrip()
+        self.speech, _ = self.stt.get_transcription(audio=path.as_posix()).lstrip()
         print("\n" + Fore.CYAN + Style.BRIGHT + "User Speech:")
         print(Fore.CYAN + Style.NORMAL + self.speech + "\n")
 
